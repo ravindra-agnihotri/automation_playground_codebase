@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+</head>
+<body>
+
+<h1 id="dashboardTitle">
+
+    Automation Dashboard
+
+</h1>
+
+<p id="welcomeMsg"></p>
+
+<button id="logoutBtn">
+
+    Logout
+
+</button>
+
+<script>
+
+    const user =
+        sessionStorage.getItem(
+            "user"
+        );
+
+    if(!user){
+
+        window.location.href =
+            "login.html";
+
+    }
+
+    document
+        .getElementById(
+            "welcomeMsg")
+        .innerText =
+
+        "Welcome " + user;
+
+    document
+        .getElementById(
+            "logoutBtn")
+        .onclick = ()=>{
+
+        sessionStorage.clear();
+
+        window.location.href =
+            "login.html";
+
+    };
+
+</script>
+
+</body>
+</html>

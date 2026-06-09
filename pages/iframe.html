@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1">
+
+    <title>iFrame Playground</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:95%;
+            margin:30px auto;
+        }
+
+        .card{
+            background:#fff;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        iframe{
+            width:100%;
+            height:250px;
+            border:1px solid #ccc;
+        }
+
+        .hidden-frame{
+            display:none;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>iFrame Playground</h1>
+
+    <!-- Single Frame -->
+
+    <div class="card">
+
+        <h3>Single iFrame</h3>
+
+        <iframe
+                id="singleFrame"
+                src="../iframe/frame1.html">
+        </iframe>
+
+    </div>
+
+    <!-- Nested Frame -->
+
+    <div class="card">
+
+        <h3>Nested iFrame</h3>
+
+        <iframe
+                id="outerFrame"
+                src="../iframe/frame2.html">
+        </iframe>
+
+    </div>
+
+    <!-- Table Frame -->
+
+    <div class="card">
+
+        <h3>Table iFrame</h3>
+
+        <iframe
+                id="tableFrame"
+                src="../iframe/table-frame.html">
+        </iframe>
+
+    </div>
+
+    <!-- Dynamic Frame -->
+
+    <div class="card">
+
+        <h3>Dynamic iFrame</h3>
+
+        <button id="loadFrameBtn">
+
+            Load Frame
+
+        </button>
+
+        <br><br>
+
+        <iframe
+                id="dynamicFrame">
+        </iframe>
+
+    </div>
+
+    <!-- Hidden Frame -->
+
+    <div class="card">
+
+        <h3>Hidden iFrame</h3>
+
+        <iframe
+                id="hiddenFrame"
+                class="hidden-frame"
+                src="../iframe/frame1.html">
+        </iframe>
+
+    </div>
+
+</div>
+
+<script>
+
+    document
+        .getElementById(
+            "loadFrameBtn")
+        .onclick = ()=>{
+
+        document
+            .getElementById(
+                "dynamicFrame")
+            .src =
+            "../iframe/frame1.html";
+
+    };
+
+</script>
+
+</body>
+</html>

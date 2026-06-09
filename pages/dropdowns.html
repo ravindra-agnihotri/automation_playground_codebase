@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dropdown Playground</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            max-width:1000px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:#fff;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 10px rgba(0,0,0,.1);
+        }
+
+        label{
+            display:block;
+            margin-bottom:8px;
+            font-weight:bold;
+        }
+
+        select,input{
+            width:100%;
+            padding:10px;
+            border:1px solid #ccc;
+            border-radius:5px;
+        }
+
+        .suggestion-box{
+            border:1px solid #ccc;
+            max-height:150px;
+            overflow-y:auto;
+            display:none;
+        }
+
+        .suggestion-item{
+            padding:10px;
+            cursor:pointer;
+        }
+
+        .suggestion-item:hover{
+            background:#f2f2f2;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Dropdown Playground</h1>
+
+    <!-- Static Dropdown -->
+
+    <div class="card">
+
+        <h3>Static Dropdown</h3>
+
+        <label>Country</label>
+
+        <select id="countryDropdown">
+            <option>India</option>
+            <option>USA</option>
+            <option>UK</option>
+            <option>Australia</option>
+        </select>
+
+    </div>
+
+    <!-- Multi Select -->
+
+    <div class="card">
+
+        <h3>Multi Select Dropdown</h3>
+
+        <label>Technologies</label>
+
+        <select id="technologyDropdown" multiple size="6">
+            <option>Java</option>
+            <option>Spring Boot</option>
+            <option>Selenium</option>
+            <option>Playwright</option>
+            <option>React</option>
+            <option>AWS</option>
+        </select>
+
+    </div>
+
+    <!-- Dynamic Dropdown -->
+
+    <div class="card">
+
+        <h3>Country → State → City</h3>
+
+        <label>Country</label>
+        <select id="country"></select>
+
+        <label>State</label>
+        <select id="state"></select>
+
+        <label>City</label>
+        <select id="city"></select>
+
+    </div>
+
+    <!-- Searchable Dropdown -->
+
+    <div class="card">
+
+        <h3>Searchable Dropdown</h3>
+
+        <input
+                id="searchInput"
+                placeholder="Search technology">
+
+        <div id="suggestions"
+             class="suggestion-box">
+        </div>
+
+    </div>
+
+    <!-- AJAX Dropdown -->
+
+    <div class="card">
+
+        <h3>AJAX Dropdown</h3>
+
+        <button id="loadCountriesBtn">
+            Load Countries
+        </button>
+
+        <br><br>
+
+        <select id="ajaxDropdown">
+            <option>
+                Click button to load data
+            </option>
+        </select>
+
+    </div>
+
+</div>
+<script src="../js/app.js"></script>
+<script src="../js/dropdowns.js"></script>
+
+</body>
+</html>

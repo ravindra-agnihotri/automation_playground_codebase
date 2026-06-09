@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>File Upload Playground</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            max-width:1000px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:#fff;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        input[type=file]{
+            margin:10px 0;
+        }
+
+        #dropZone{
+            border:2px dashed #1976d2;
+            padding:40px;
+            text-align:center;
+            cursor:pointer;
+            margin-top:15px;
+        }
+
+        #dropZone.dragover{
+            background:#e3f2fd;
+        }
+
+        .preview{
+            margin-top:15px;
+        }
+
+        .preview img{
+            max-width:200px;
+            border-radius:8px;
+        }
+
+        .progress-container{
+            margin-top:20px;
+        }
+
+        progress{
+            width:100%;
+            height:25px;
+        }
+
+        .success{
+            color:green;
+            font-weight:bold;
+        }
+
+        .error{
+            color:red;
+            font-weight:bold;
+        }
+
+        .file-item{
+            margin-top:10px;
+        }
+
+        .remove-btn{
+            margin-left:10px;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>File Upload Playground</h1>
+
+    <div class="card">
+
+        <h3>Single File Upload</h3>
+
+        <input
+                type="file"
+                id="singleUpload">
+
+    </div>
+
+    <div class="card">
+
+        <h3>Multiple File Upload</h3>
+
+        <input
+                type="file"
+                id="multipleUpload"
+                multiple>
+
+        <div id="fileList"></div>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Drag & Drop Upload</h3>
+
+        <div id="dropZone">
+
+            Drop Files Here
+
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Image Preview</h3>
+
+        <input
+                type="file"
+                id="imageUpload"
+                accept="image/*">
+
+        <div
+                class="preview"
+                id="preview">
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Upload Simulation</h3>
+
+        <button id="uploadBtn">
+            Start Upload
+        </button>
+
+        <div class="progress-container">
+
+            <progress
+                    id="uploadProgress"
+                    value="0"
+                    max="100">
+            </progress>
+
+        </div>
+
+        <div id="uploadResult"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+    /**************************
+     IMAGE PREVIEW
+     **************************/
+
+    document
+        .getElementById("imageUpload")
+        .addEventListener("change",
+            function(){
+
+                const file =
+                    this.files[0];
+
+                if(!file) return;
+
+                const reader =
+                    new FileReader();
+
+                reader.onload =
+                    function(e){
+
+                        document
+                            .getElementById("preview")
+                            .innerHTML =
+
+                            `<img src="${e.target.result}">`;
+
+                    };
+
+                reader.readAsDataURL(file);
+
+            });
+
+    /**************************
+     MULTIPLE FILES
+     **************************/
+
+    document
+        .getElementById("multipleUpload")
+        .addEventListener("change",
+            function(){
+
+                const fileList =
+                    document.getElementById(
+                        "fileList");
+
+                fileList.innerHTML = "";
+
+                Array.from(this.files)
+                    .forEach(file=>{
+
+                        const div =
+                            document.createElement("div");
+
+                        div.className =
+                            "file-item";
+
+                        div.innerHTML =
+
+                            `${file.name}
+
+<button
+class="remove-btn">
+Remove
+</button>`;
+
+                        div.querySelector("button")
+                            .onclick = ()=>{
+
+                            div.remove();
+
+                        };
+
+                        fileList.appendChild(div);
+
+                    });
+
+            });
+
+    /**************************
+     DRAG DROP
+     **************************/
+
+    const dropZone =
+        document.getElementById(
+            "dropZone");
+
+    dropZone.addEventListener(
+        "dragover",
+        e=>{
+
+            e.preventDefault();
+
+            dropZone.classList.add(
+                "dragover");
+
+        });
+
+    dropZone.addEventListener(
+        "dragleave",
+        ()=>{
+
+            dropZone.classList.remove(
+                "dragover");
+
+        });
+
+    dropZone.addEventListener(
+        "drop",
+        e=>{
+
+            e.preventDefault();
+
+            dropZone.classList.remove(
+                "dragover");
+
+            alert(
+                e.dataTransfer.files.length +
+                " file(s) dropped");
+
+        });
+
+    /**************************
+     VALIDATION
+     **************************/
+
+    document
+        .getElementById("singleUpload")
+        .addEventListener("change",
+            function(){
+
+                const file =
+                    this.files[0];
+
+                if(!file) return;
+
+                const maxSize =
+                    2 * 1024 * 1024;
+
+                if(file.size > maxSize){
+
+                    alert(
+                        "File size exceeds 2MB");
+
+                    this.value = "";
+
+                    return;
+
+                }
+
+            });
+
+    /**************************
+     UPLOAD SIMULATION
+     **************************/
+
+    document
+        .getElementById("uploadBtn")
+        .addEventListener("click",
+            function(){
+
+                const progress =
+                    document.getElementById(
+                        "uploadProgress");
+
+                const result =
+                    document.getElementById(
+                        "uploadResult");
+
+                progress.value = 0;
+
+                let value = 0;
+
+                const timer =
+                    setInterval(()=>{
+
+                        value += 10;
+
+                        progress.value =
+                            value;
+
+                        if(value >= 100){
+
+                            clearInterval(timer);
+
+                            result.innerHTML =
+
+                                '<p class="success">Upload Successful</p>';
+
+                        }
+
+                    },300);
+
+            });
+
+</script>
+
+</body>
+</html>

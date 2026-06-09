@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tables Playground</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:95%;
+            margin:30px auto;
+        }
+
+        .card{
+            background:#fff;
+            padding:20px;
+            margin-bottom:25px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            margin-top:15px;
+        }
+
+        th,td{
+            border:1px solid #ddd;
+            padding:10px;
+            text-align:left;
+        }
+
+        th{
+            background:#1976d2;
+            color:white;
+            cursor:pointer;
+        }
+
+        button{
+            padding:6px 12px;
+            margin:2px;
+            cursor:pointer;
+        }
+
+        input{
+            padding:8px;
+            width:300px;
+        }
+
+        .pagination button{
+            margin-top:10px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Tables Playground</h1>
+
+    <!-- Search -->
+
+    <div class="card">
+
+        <h3>Search Employees</h3>
+
+        <input
+                id="searchInput"
+                placeholder="Search by name">
+
+    </div>
+
+    <!-- Table -->
+
+    <div class="card">
+
+        <table id="employeeTable">
+
+            <thead>
+
+            <tr>
+                <th>ID</th>
+                <th id="sortName">Name ▲▼</th>
+                <th>Department</th>
+                <th>Salary</th>
+                <th>Select</th>
+                <th>Actions</th>
+            </tr>
+
+            </thead>
+
+            <tbody id="tableBody">
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <!-- AJAX -->
+
+    <div class="card">
+
+        <h3>AJAX Load Data</h3>
+
+        <button id="loadDataBtn">
+            Load Data
+        </button>
+
+    </div>
+
+    <!-- Pagination -->
+
+    <div class="card">
+
+        <div class="pagination">
+
+            <button id="prevBtn">
+                Previous
+            </button>
+
+            <span id="pageInfo">
+Page 1
+</span>
+
+            <button id="nextBtn">
+                Next
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    /*******************
+     DATA
+     ********************/
+
+    let employees = [
+
+        {id:1,name:"Ravindra",dept:"QA",salary:50000},
+        {id:2,name:"John",dept:"Dev",salary:70000},
+        {id:3,name:"David",dept:"HR",salary:40000},
+        {id:4,name:"Priya",dept:"QA",salary:55000},
+        {id:5,name:"Amit",dept:"Dev",salary:80000},
+        {id:6,name:"Neha",dept:"Support",salary:35000},
+        {id:7,name:"Vijay",dept:"QA",salary:60000},
+        {id:8,name:"Rohit",dept:"DevOps",salary:75000},
+        {id:9,name:"Karan",dept:"Admin",salary:30000},
+        {id:10,name:"Anjali",dept:"HR",salary:45000}
+
+    ];
+
+    let currentPage = 1;
+    let rowsPerPage = 5;
+
+    /*******************
+     RENDER TABLE
+     ********************/
+
+    function renderTable(data){
+
+        const start =
+            (currentPage-1)*rowsPerPage;
+
+        const end =
+            start + rowsPerPage;
+
+        const paginated =
+            data.slice(start,end);
+
+        const tbody =
+            document.getElementById("tableBody");
+
+        tbody.innerHTML="";
+
+        paginated.forEach(emp=>{
+
+            tbody.innerHTML += `
+
+<tr>
+
+<td>${emp.id}</td>
+
+<td>${emp.name}</td>
+
+<td>${emp.dept}</td>
+
+<td>${emp.salary}</td>
+
+<td>
+<input
+type="checkbox"
+class="rowCheckbox">
+</td>
+
+<td>
+
+<button
+class="editBtn"
+data-id="${emp.id}">
+Edit
+</button>
+
+<button
+class="deleteBtn"
+data-id="${emp.id}">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+        });
+
+        document.getElementById("pageInfo")
+            .innerText =
+            `Page ${currentPage}`;
+
+        attachEvents();
+
+    }
+
+    /*******************
+     SEARCH
+     ********************/
+
+    document
+        .getElementById("searchInput")
+        .addEventListener("keyup",function(){
+
+            let value =
+                this.value.toLowerCase();
+
+            let filtered =
+                employees.filter(emp=>
+
+                    emp.name
+                        .toLowerCase()
+                        .includes(value)
+
+                );
+
+            renderTable(filtered);
+
+        });
+
+    /*******************
+     SORT
+     ********************/
+
+    document
+        .getElementById("sortName")
+        .addEventListener("click",()=>{
+
+            employees.sort((a,b)=>
+                a.name.localeCompare(b.name));
+
+            renderTable(employees);
+
+        });
+
+    /*******************
+     EDIT / DELETE
+     ********************/
+
+    function attachEvents(){
+
+        document
+            .querySelectorAll(".deleteBtn")
+            .forEach(btn=>{
+
+                btn.onclick = function(){
+
+                    let id =
+                        parseInt(
+                            this.dataset.id
+                        );
+
+                    employees =
+                        employees.filter(
+                            e=>e.id!==id
+                        );
+
+                    renderTable(
+                        employees
+                    );
+
+                };
+
+            });
+
+        document
+            .querySelectorAll(".editBtn")
+            .forEach(btn=>{
+
+                btn.onclick = function(){
+
+                    let id =
+                        this.dataset.id;
+
+                    alert(
+                        "Edit Employee ID : "
+                        + id
+                    );
+
+                };
+
+            });
+
+    }
+
+    /*******************
+     PAGINATION
+     ********************/
+
+    document
+        .getElementById("nextBtn")
+        .addEventListener("click",()=>{
+
+            let totalPages =
+                Math.ceil(
+                    employees.length /
+                    rowsPerPage
+                );
+
+            if(currentPage < totalPages){
+
+                currentPage++;
+
+                renderTable(
+                    employees
+                );
+
+            }
+
+        });
+
+    document
+        .getElementById("prevBtn")
+        .addEventListener("click",()=>{
+
+            if(currentPage > 1){
+
+                currentPage--;
+
+                renderTable(
+                    employees
+                );
+
+            }
+
+        });
+
+    /*******************
+     AJAX LOADER
+     ********************/
+
+    document
+        .getElementById("loadDataBtn")
+        .addEventListener("click",()=>{
+
+            setTimeout(()=>{
+
+                employees.push({
+
+                    id:11,
+                    name:"Automation User",
+                    dept:"Testing",
+                    salary:90000
+
+                });
+
+                renderTable(
+                    employees
+                );
+
+                alert(
+                    "AJAX Data Loaded"
+                );
+
+            },3000);
+
+        });
+
+    /*******************
+     INITIAL LOAD
+     ********************/
+
+    renderTable(employees);
+
+</script>
+
+</body>
+</html>

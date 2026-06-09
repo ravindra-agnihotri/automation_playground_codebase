@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Frame 1</title>
+</head>
+<body>
+
+<h2 id="frameHeading">
+    Frame 1 Content
+</h2>
+
+<input
+        id="frameTextbox"
+        placeholder="Enter text">
+
+<button id="frameButton">
+    Submit
+</button>
+
+<p id="frameResult"></p>
+
+<script>
+
+    document
+        .getElementById("frameButton")
+        .onclick = ()=>{
+
+        document
+            .getElementById("frameResult")
+            .innerText =
+            "Frame Submitted";
+
+    };
+
+</script>
+
+</body>
+</html>

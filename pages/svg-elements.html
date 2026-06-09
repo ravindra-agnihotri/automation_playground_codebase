@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1">
+
+    <title>SVG Playground</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            max-width:1200px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        svg{
+            border:1px solid #ddd;
+            margin-top:10px;
+        }
+
+        .bar{
+            cursor:pointer;
+        }
+
+        #tooltip{
+            display:none;
+            position:absolute;
+            background:black;
+            color:white;
+            padding:6px 10px;
+            border-radius:5px;
+            pointer-events:none;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>SVG Elements Playground</h1>
+
+    <!-- BASIC SVG -->
+
+    <div class="card">
+
+        <h3>Basic SVG Shapes</h3>
+
+        <svg
+                id="basicSvg"
+                width="600"
+                height="200">
+
+            <circle
+                    id="svgCircle"
+                    cx="80"
+                    cy="100"
+                    r="40"
+                    fill="green">
+            </circle>
+
+            <rect
+                    id="svgRect"
+                    x="180"
+                    y="60"
+                    width="120"
+                    height="80"
+                    fill="blue">
+            </rect>
+
+            <line
+                    id="svgLine"
+                    x1="350"
+                    y1="50"
+                    x2="500"
+                    y2="150"
+                    stroke="red"
+                    stroke-width="5">
+            </line>
+
+        </svg>
+
+    </div>
+
+    <!-- BAR CHART -->
+
+    <div class="card">
+
+        <h3>Interactive SVG Chart</h3>
+
+        <svg
+                id="barChart"
+                width="700"
+                height="300">
+
+            <rect
+                    class="bar"
+                    data-value="50"
+                    x="50"
+                    y="100"
+                    width="80"
+                    height="150">
+            </rect>
+
+            <rect
+                    class="bar"
+                    data-value="80"
+                    x="180"
+                    y="70"
+                    width="80"
+                    height="180">
+            </rect>
+
+            <rect
+                    class="bar"
+                    data-value="120"
+                    x="310"
+                    y="30"
+                    width="80"
+                    height="220">
+            </rect>
+
+            <rect
+                    class="bar"
+                    data-value="60"
+                    x="440"
+                    y="90"
+                    width="80"
+                    height="160">
+            </rect>
+
+        </svg>
+
+    </div>
+
+    <!-- PIE CHART -->
+
+    <div class="card">
+
+        <h3>SVG Pie Chart</h3>
+
+        <svg
+                width="400"
+                height="300">
+
+            <circle
+                    cx="150"
+                    cy="150"
+                    r="100"
+                    fill="lightgray">
+            </circle>
+
+            <path
+                    id="pieSlice"
+                    d="M150 150 L150 50
+A100 100 0 0 1 250 150 Z"
+                    fill="orange">
+            </path>
+
+        </svg>
+
+    </div>
+
+    <!-- DYNAMIC SVG -->
+
+    <div class="card">
+
+        <h3>Dynamic SVG</h3>
+
+        <button id="createSvgBtn">
+
+            Create Circle
+
+        </button>
+
+        <br><br>
+
+        <svg
+                id="dynamicSvg"
+                width="700"
+                height="200">
+
+        </svg>
+
+    </div>
+
+</div>
+
+<div id="tooltip"></div>
+
+<script>
+
+    /**************************
+     TOOLTIP
+     **************************/
+
+    const tooltip =
+        document.getElementById(
+            "tooltip"
+        );
+
+    document
+        .querySelectorAll(".bar")
+        .forEach(bar=>{
+
+            bar.addEventListener(
+                "mousemove",
+                e=>{
+
+                    tooltip.style.display =
+                        "block";
+
+                    tooltip.style.left =
+                        e.pageX + 10 + "px";
+
+                    tooltip.style.top =
+                        e.pageY + "px";
+
+                    tooltip.innerText =
+
+                        "Value: " +
+                        bar.dataset.value;
+
+                });
+
+            bar.addEventListener(
+                "mouseleave",
+                ()=>{
+
+                    tooltip.style.display =
+                        "none";
+
+                });
+
+            bar.addEventListener(
+                "click",
+                ()=>{
+
+                    alert(
+                        "Bar Value: " +
+                        bar.dataset.value
+                    );
+
+                });
+
+        });
+
+    /**************************
+     DYNAMIC SVG
+     **************************/
+
+    document
+        .getElementById(
+            "createSvgBtn")
+        .onclick = ()=>{
+
+        const svg =
+            document
+                .getElementById(
+                    "dynamicSvg"
+                );
+
+        const circle =
+            document
+                .createElementNS(
+
+                    "http://www.w3.org/2000/svg",
+
+                    "circle"
+
+                );
+
+        circle.setAttribute(
+            "cx",
+            Math.random()*600
+        );
+
+        circle.setAttribute(
+            "cy",
+            100
+        );
+
+        circle.setAttribute(
+            "r",
+            30
+        );
+
+        circle.setAttribute(
+            "fill",
+            "purple"
+        );
+
+        svg.appendChild(
+            circle
+        );
+
+    };
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1">
+
+    <title>Shadow DOM Playground</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            max-width:1000px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        button{
+            padding:10px 15px;
+            cursor:pointer;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Shadow DOM Playground</h1>
+
+    <div class="card">
+
+        <h3>Open Shadow DOM</h3>
+
+        <shadow-form>
+        </shadow-form>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Nested Shadow DOM</h3>
+
+        <nested-shadow>
+        </nested-shadow>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Dynamic Shadow Component</h3>
+
+        <button id="loadShadowBtn">
+
+            Load Component
+
+        </button>
+
+        <div id="dynamicArea"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+    /*********************************
+     OPEN SHADOW COMPONENT
+     **********************************/
+
+    class ShadowForm
+        extends HTMLElement {
+
+        constructor(){
+
+            super();
+
+            const shadow =
+                this.attachShadow({
+                    mode:'open'
+                });
+
+            shadow.innerHTML = `
+
+<style>
+
+.container{
+padding:10px;
+border:1px solid #ccc;
+}
+
+input,
+select{
+display:block;
+margin:10px 0;
+padding:8px;
+}
+
+</style>
+
+<div class="container">
+
+<input
+id="shadowInput"
+placeholder="Shadow Input">
+
+<select id="shadowDropdown">
+
+<option>Java</option>
+<option>Selenium</option>
+<option>Playwright</option>
+
+</select>
+
+<label>
+
+<input
+type="checkbox"
+id="shadowCheckbox">
+
+Automation
+
+</label>
+
+<button
+id="shadowButton">
+
+Submit
+
+</button>
+
+<p id="shadowResult"></p>
+
+</div>
+`;
+
+            shadow
+                .getElementById(
+                    "shadowButton")
+                .onclick = ()=>{
+
+                shadow
+                    .getElementById(
+                        "shadowResult")
+                    .innerText =
+
+                    "Shadow Form Submitted";
+
+            };
+
+        }
+
+    }
+
+    customElements.define(
+        "shadow-form",
+        ShadowForm
+    );
+
+    /*********************************
+     NESTED SHADOW DOM
+     **********************************/
+
+    class NestedShadow
+        extends HTMLElement {
+
+        constructor(){
+
+            super();
+
+            const shadow =
+                this.attachShadow({
+                    mode:'open'
+                });
+
+            shadow.innerHTML =
+
+                `
+<div id="outerShadow">
+
+Outer Shadow Root
+
+<nested-child>
+</nested-child>
+
+</div>
+`;
+
+        }
+
+    }
+
+    customElements.define(
+        "nested-shadow",
+        NestedShadow
+    );
+
+    class NestedChild
+        extends HTMLElement {
+
+        constructor(){
+
+            super();
+
+            const shadow =
+                this.attachShadow({
+                    mode:'open'
+                });
+
+            shadow.innerHTML =
+
+                `
+<input
+id="nestedInput"
+placeholder="Nested Shadow Input">
+
+<button
+id="nestedBtn">
+
+Save
+
+</button>
+
+<p id="nestedResult"></p>
+`;
+
+            shadow
+                .getElementById(
+                    "nestedBtn")
+                .onclick = ()=>{
+
+                shadow
+                    .getElementById(
+                        "nestedResult")
+                    .innerText =
+
+                    "Nested Saved";
+
+            };
+
+        }
+
+    }
+
+    customElements.define(
+        "nested-child",
+        NestedChild
+    );
+
+    /*********************************
+     DYNAMIC SHADOW
+     **********************************/
+
+    document
+        .getElementById(
+            "loadShadowBtn")
+        .onclick = ()=>{
+
+        const host =
+            document
+                .createElement(
+                    "div"
+                );
+
+        const shadow =
+            host.attachShadow({
+                mode:'open'
+            });
+
+        shadow.innerHTML =
+
+            `
+<h3 id="dynamicTitle">
+
+Dynamic Shadow Loaded
+
+</h3>
+
+<input
+id="dynamicInput">
+
+`;
+
+        document
+            .getElementById(
+                "dynamicArea")
+            .appendChild(
+                host
+            );
+
+    };
+
+</script>
+
+</body>
+</html>

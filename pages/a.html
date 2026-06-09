@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Elements Playground — Selenium & Playwright</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Unbounded:wght@300;700;900&display=swap');
+
+        :root {
+            --bg: #f5f0e8;
+            --ink: #1a1612;
+            --surface: #ede8df;
+            --surface2: #e2dbd0;
+            --border: #c8bfaf;
+            --accent: #c1440e;
+            --accent2: #2563a8;
+            --accent3: #1a7a4a;
+            --muted: #8a7f72;
+            --tag: #6b3fa0;
+            --shadow: 0 2px 0 #c8bfaf;
+            --shadow-deep: 0 4px 0 #b8af9f;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--ink);
+            font-family: 'DM Mono', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            padding: 0;
+        }
+
+        /* ── HEADER ── */
+        .site-header {
+            background: var(--ink);
+            color: var(--bg);
+            padding: 2.5rem 3rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            border-bottom: 4px solid var(--accent);
+        }
+
+        .site-header h1 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: clamp(1.1rem, 3vw, 2rem);
+            font-weight: 900;
+            letter-spacing: -1px;
+            line-height: 1;
+        }
+
+        .site-header h1 span { color: var(--accent); }
+
+        .site-header p {
+            font-size: 0.68rem;
+            color: #9a9080;
+            margin-top: 0.3rem;
+            letter-spacing: 1px;
+        }
+
+        .header-meta {
+            display: flex;
+            gap: 0.6rem;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .badge {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            padding: 3px 10px;
+            border-radius: 2px;
+            text-transform: uppercase;
+        }
+
+        .badge-selenium { background: #43b02a; color: #fff; }
+        .badge-playwright { background: #2563a8; color: #fff; }
+
+        /* ── NAV SIDEBAR ── */
+        .layout {
+            display: grid;
+            grid-template-columns: 220px 1fr;
+            min-height: calc(100vh - 90px);
+        }
+
+        .sidebar {
+            background: var(--surface);
+            border-right: 2px solid var(--border);
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 90px;
+            height: calc(100vh - 90px);
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            padding: 0.3rem 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 0.3rem;
+        }
+
+        .sidebar-label {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.5rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--muted);
+            padding: 0.4rem 1.2rem;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 0.35rem 1.2rem;
+            font-size: 0.72rem;
+            color: var(--ink);
+            text-decoration: none;
+            transition: background 0.1s, color 0.1s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar a:hover {
+            background: var(--surface2);
+            border-left-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* ── MAIN CONTENT ── */
+        .main { padding: 2rem 2.5rem; }
+
+        /* ── SECTION ── */
+        .section {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 0;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow-deep);
+        }
+
+        .section-header {
+            background: var(--ink);
+            color: var(--bg);
+            padding: 0.8rem 1.4rem;
+            display: flex;
+            align-items: baseline;
+            gap: 1rem;
+        }
+
+        .section-num {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.6rem;
+            color: var(--accent);
+            font-weight: 700;
+            letter-spacing: 2px;
+        }
+
+        .section-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            flex: 1;
+        }
+
+        .section-body { padding: 1.5rem; }
+
+        /* ── FIELD GROUP ── */
+        .field-group {
+            margin-bottom: 1.2rem;
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 0.6rem;
+            align-items: flex-start;
+        }
+
+        .field-group.full { grid-template-columns: 1fr; }
+
+        .field-label {
+            font-size: 0.7rem;
+            color: var(--muted);
+            padding-top: 6px;
+            line-height: 1.3;
+        }
+
+        .field-label code {
+            display: block;
+            font-size: 0.6rem;
+            color: var(--tag);
+            margin-top: 2px;
+        }
+
+        /* ── INPUTS ── */
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="tel"],
+        input[type="url"],
+        input[type="search"],
+        input[type="date"],
+        input[type="datetime-local"],
+        input[type="time"],
+        input[type="month"],
+        input[type="week"],
+        input[type="color"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.55rem 0.8rem;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.82rem;
+            color: var(--ink);
+            box-shadow: var(--shadow);
+            transition: border-color 0.15s;
+            appearance: none;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent2);
+            box-shadow: 0 0 0 3px #2563a830;
+        }
+
+        input:disabled, textarea:disabled, select:disabled {
+            background: var(--surface2);
+            color: var(--muted);
+            cursor: not-allowed;
+            border-style: dashed;
+        }
+
+        input[readonly] {
+            background: var(--surface);
+            border-style: dashed;
+        }
+
+        input[type="color"] {
+            height: 42px;
+            padding: 3px;
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        input[type="file"] {
+            width: 100%;
+            padding: 0.5rem;
+            background: var(--bg);
+            border: 2px dashed var(--border);
+            font-family: 'DM Mono', monospace;
+            font-size: 0.78rem;
+            cursor: pointer;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M0 0l6 8 6-8z' fill='%238a7f72'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            padding-right: 2.5rem;
+        }
+
+        /* ── CHECKBOXES & RADIOS ── */
+        .check-group, .radio-group { display: flex; flex-direction: column; gap: 0.5rem; }
+
+        .check-item, .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+        }
+
+        input[type="checkbox"], input[type="radio"] {
+            width: 18px; height: 18px;
+            accent-color: var(--accent);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        /* ── BUTTONS ── */
+        .btn-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.6rem;
+        }
+
+        button, input[type="button"], input[type="submit"], input[type="reset"] {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.78rem;
+            padding: 0.55rem 1.2rem;
+            border: 2px solid var(--ink);
+            border-radius: 0;
+            cursor: pointer;
+            transition: all 0.1s;
+            box-shadow: var(--shadow);
+            letter-spacing: 0.5px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+        .btn-primary:hover { background: #a33a0c; transform: translateY(-1px); box-shadow: var(--shadow-deep); }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--ink);
+        }
+        .btn-secondary:hover { background: var(--surface2); transform: translateY(-1px); }
+
+        .btn-outline-blue {
+            background: transparent;
+            color: var(--accent2);
+            border-color: var(--accent2);
+        }
+        .btn-outline-blue:hover { background: var(--accent2); color: #fff; }
+
+        .btn-outline-green {
+            background: transparent;
+            color: var(--accent3);
+            border-color: var(--accent3);
+        }
+        .btn-outline-green:hover { background: var(--accent3); color: #fff; }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* ── TABLE ── */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+        }
+
+        thead { background: var(--ink); color: var(--bg); }
+        thead th {
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            font-weight: 500;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        tbody tr { border-bottom: 1px solid var(--border); }
+        tbody tr:hover { background: var(--surface2); }
+        tbody td { padding: 0.55rem 0.8rem; }
+
+        tbody tr:nth-child(even) { background: var(--surface); }
+        tbody tr:nth-child(even):hover { background: var(--surface2); }
+
+        tfoot { background: var(--surface2); font-weight: 500; }
+        tfoot td { padding: 0.55rem 0.8rem; border-top: 2px solid var(--border); }
+
+        /* ── LINKS ── */
+        .link-grid { display: flex; flex-wrap: wrap; gap: 1.2rem 2rem; align-items: center; }
+
+        a { color: var(--accent2); }
+        a:hover { color: var(--accent); }
+        a:visited { color: var(--tag); }
+
+        .link-external::after { content: ' ↗'; font-size: 0.7em; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #1a161288;
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal-box {
+            background: var(--bg);
+            border: 3px solid var(--ink);
+            box-shadow: 8px 8px 0 var(--ink);
+            padding: 2rem;
+            width: min(480px, 90vw);
+            position: relative;
+        }
+
+        .modal-box h3 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 0.8rem; right: 0.8rem;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: none;
+        }
+
+        /* ── TABS ── */
+        .tabs-nav {
+            display: flex;
+            border-bottom: 2px solid var(--border);
+            gap: 0;
+        }
+
+        .tab-btn {
+            font-family: 'DM Mono', monospace;
+            font-size: 0.75rem;
+            padding: 0.6rem 1.2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            cursor: pointer;
+            color: var(--muted);
+            box-shadow: none;
+            transition: color 0.15s, border-color 0.15s;
+        }
+
+        .tab-btn:hover { color: var(--ink); }
+        .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 500; }
+
+        .tab-panel { display: none; padding: 1.2rem 0; font-size: 0.82rem; }
+        .tab-panel.active { display: block; }
+
+        /* ── ACCORDION ── */
+        .accordion-item { border: 2px solid var(--border); margin-bottom: -2px; }
+
+        .accordion-trigger {
+            width: 100%;
+            text-align: left;
+            background: var(--surface);
+            border: none;
+            padding: 0.75rem 1rem;
+            font-family: 'DM Mono', monospace;
+            font-size: 0.8rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: none;
+            transition: background 0.15s;
+        }
+
+        .accordion-trigger:hover { background: var(--surface2); }
+        .accordion-trigger.open { background: var(--ink); color: var(--bg); }
+        .accordion-trigger .arrow { transition: transform 0.2s; }
+        .accordion-trigger.open .arrow { transform: rotate(180deg); }
+
+        .accordion-body {
+            display: none;
+            padding: 0.9rem 1rem;
+            font-size: 0.8rem;
+            background: var(--bg);
+            border-top: 2px solid var(--border);
+        }
+        .accordion-body.open { display: block; }
+
+        /* ── PROGRESS & METER ── */
+        progress {
+            width: 100%;
+            height: 18px;
+            appearance: none;
+            border: 2px solid var(--border);
+            background: var(--surface2);
+        }
+        progress::-webkit-progress-bar { background: var(--surface2); }
+        progress::-webkit-progress-value { background: var(--accent); }
+        progress::-moz-progress-bar { background: var(--accent); }
+
+        meter {
+            width: 100%;
+            height: 18px;
+        }
+
+        /* ── DETAILS/SUMMARY ── */
+        details {
+            border: 2px solid var(--border);
+            padding: 0;
+            background: var(--bg);
+        }
+        summary {
+            padding: 0.7rem 1rem;
+            cursor: pointer;
+            font-size: 0.82rem;
+            background: var(--surface);
+            user-select: none;
+            list-style: none;
+            display: flex;
+            justify-content: space-between;
+        }
+        summary::after { content: '▾'; }
+        details[open] summary::after { content: '▴'; }
+        details[open] summary { background: var(--surface2); }
+        .details-body { padding: 0.8rem 1rem; font-size: 0.8rem; }
+
+        /* ── TOAST ── */
+        .toast-area {
+            position: fixed;
+            top: 1rem; right: 1rem;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .toast {
+            background: var(--ink);
+            color: var(--bg);
+            padding: 0.7rem 1.2rem;
+            font-size: 0.75rem;
+            border-left: 4px solid var(--accent);
+            animation: slideIn 0.2s ease, fadeOut 0.3s ease 2.7s forwards;
+            max-width: 280px;
+        }
+
+        .toast.success { border-left-color: var(--accent3); }
+        .toast.error { border-left-color: var(--accent); }
+        .toast.info { border-left-color: var(--accent2); }
+
+        @keyframes slideIn { from { transform: translateX(120%); opacity: 0; } to { transform: none; opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateX(120%); } }
+
+        /* ── TOOLTIP ── */
+        [data-tooltip] { position: relative; cursor: help; }
+        [data-tooltip]::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--ink);
+            color: var(--bg);
+            font-size: 0.65rem;
+            padding: 4px 8px;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 10;
+        }
+        [data-tooltip]:hover::after { opacity: 1; }
+
+        /* ── MISC ── */
+        .inline-row { display: flex; flex-wrap: wrap; gap: 0.8rem; align-items: center; }
+
+        .chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 3px 10px;
+            font-size: 0.68rem;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            border-radius: 2px;
+        }
+
+        .testid-tag {
+            font-size: 0.55rem;
+            color: var(--tag);
+            font-family: 'DM Mono', monospace;
+            border: 1px solid #c8a8f0;
+            background: #f5efff;
+            padding: 1px 5px;
+            border-radius: 2px;
+            margin-left: auto;
+            flex-shrink: 0;
+        }
+
+        .list-row { display: flex; flex-direction: column; gap: 0.3rem; font-size: 0.8rem; }
+        .list-row li { list-style: none; padding: 0.3rem 0; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+
+        /* ── IFRAME ── */
+        iframe {
+            width: 100%;
+            border: 2px solid var(--border);
+            display: block;
+        }
+
+        /* ── CANVAS ── */
+        canvas {
+            border: 2px solid var(--border);
+            background: var(--bg);
+            cursor: crosshair;
+            display: block;
+        }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--surface); }
+        ::-webkit-scrollbar-thumb { background: var(--border); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 768px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .site-header { padding: 1.2rem; }
+            .field-group { grid-template-columns: 1fr; }
+            .kanban-board { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="toast-area" id="toast-area" data-testid="toast-area"></div>
+
+<div class="modal-overlay" id="modal-overlay" data-testid="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-box" data-testid="modal-box">
+        <button class="modal-close" data-testid="modal-close" aria-label="Close modal" onclick="closeModal()">✕</button>
+        <h3 id="modal-title" data-testid="modal-title">Confirmation Dialog</h3>
+        <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1.2rem">This is a modal dialog. It traps focus. Test overlay click, close button, and keyboard Escape.</p>
+        <div style="display:flex;gap:0.8rem">
+            <button class="btn-primary" data-testid="modal-confirm" onclick="closeModal();toast('Modal confirmed','success')">Confirm</button>
+            <button class="btn-secondary" data-testid="modal-cancel" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<header class="site-header">
+    <div>
+        <h1>QA <span>Elements</span> Playground</h1>
+        <p>Every interactable element type — Selenium &amp; Playwright practice</p>
+    </div>
+    <div class="header-meta">
+        <span class="badge badge-selenium">Selenium</span>
+        <span class="badge badge-playwright">Playwright</span>
+    </div>
+</header>
+
+<div class="layout">
+
+    <!-- SIDEBAR NAV -->
+    <nav class="sidebar" data-testid="sidebar-nav">
+        <div class="sidebar-section">
+            <div class="sidebar-label">Inputs</div>
+            <a href="#sec-text">Text Inputs</a>
+            <a href="#sec-numeric">Numeric &amp; Date</a>
+            <a href="#sec-choices">Checkboxes &amp; Radios</a>
+            <a href="#sec-select">Select &amp; Datalist</a>
+            <a href="#sec-file">File &amp; Color</a>
+            <a href="#sec-range">Range &amp; Hidden</a>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Actions</div>
+            <a href="#sec-buttons">Buttons</a>
+            <a href="#sec-links">Links &amp; Anchors</a>
+            <a href="#sec-form">Full Form</a>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Display</div>
+            <a href="#sec-table">Table</a>
+            <a href="#sec-list">Lists</a>
+            <a href="#sec-media">Media Elements</a>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Components</div>
+            <a href="#sec-modal">Modal</a>
+            <a href="#sec-tabs">Tabs</a>
+            <a href="#sec-accordion">Accordion</a>
+            <a href="#sec-toast">Toast</a>
+            <a href="#sec-details">Details / Summary</a>
+            <a href="#sec-progress">Progress &amp; Meter</a>
+            <a href="#sec-tooltip">Tooltip</a>
+        </div>
+        <div class="sidebar-section">
+            <div class="sidebar-label">Advanced</div>
+            <a href="#sec-iframe">iFrame</a>
+            <a href="#sec-canvas">Canvas</a>
+            <a href="#sec-dynamic">Dynamic DOM</a>
+            <a href="#sec-shadow">Shadow DOM</a>
+            <a href="#sec-aria">ARIA / A11y</a>
+            <a href="#sec-alerts">Browser Alerts</a>
+        </div>
+    </nav>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- ═══════════════════════════════
+             01 TEXT INPUTS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-text">
+            <div class="section-header">
+                <span class="section-num">01</span>
+                <span class="section-name">Text Inputs</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group">
+                    <div class="field-label">Text <code>[type="text"]</code></div>
+                    <input type="text" id="input-text" name="text" data-testid="input-text" placeholder="Enter text…" autocomplete="off">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Email <code>[type="email"]</code></div>
+                    <input type="email" id="input-email" name="email" data-testid="input-email" placeholder="user@example.com">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Password <code>[type="password"]</code></div>
+                    <input type="password" id="input-password" name="password" data-testid="input-password" placeholder="••••••••">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Search <code>[type="search"]</code></div>
+                    <input type="search" id="input-search" name="q" data-testid="input-search" placeholder="Search…">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">URL <code>[type="url"]</code></div>
+                    <input type="url" id="input-url" name="url" data-testid="input-url" placeholder="https://example.com">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Tel <code>[type="tel"]</code></div>
+                    <input type="tel" id="input-tel" name="tel" data-testid="input-tel" placeholder="+1 555 000 0000">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Disabled <code>[disabled]</code></div>
+                    <input type="text" id="input-disabled" name="disabled" data-testid="input-disabled" value="Cannot edit this" disabled>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Readonly <code>[readonly]</code></div>
+                    <input type="text" id="input-readonly" name="readonly" data-testid="input-readonly" value="Readonly value" readonly>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">With placeholder only</div>
+                    <input type="text" id="input-placeholder" data-testid="input-placeholder" placeholder="This is just a placeholder">
+                </div>
+
+                <div class="field-group full">
+                    <div class="field-label">Textarea <code>&lt;textarea&gt;</code></div>
+                    <textarea id="textarea-main" name="textarea" data-testid="textarea-main" rows="4" placeholder="Enter multiple lines of text…"></textarea>
+                </div>
+
+                <div class="field-group full">
+                    <div class="field-label">Textarea (disabled)</div>
+                    <textarea id="textarea-disabled" data-testid="textarea-disabled" rows="2" disabled>This textarea is disabled and cannot be modified.</textarea>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             02 NUMERIC & DATE
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-numeric">
+            <div class="section-header">
+                <span class="section-num">02</span>
+                <span class="section-name">Numeric &amp; Date / Time Inputs</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group">
+                    <div class="field-label">Number <code>[type="number"]</code></div>
+                    <input type="number" id="input-number" name="number" data-testid="input-number" min="0" max="100" step="1" value="42">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Date <code>[type="date"]</code></div>
+                    <input type="date" id="input-date" name="date" data-testid="input-date" value="2024-06-15">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Time <code>[type="time"]</code></div>
+                    <input type="time" id="input-time" name="time" data-testid="input-time" value="09:30">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Datetime-local</div>
+                    <input type="datetime-local" id="input-datetime" name="datetime" data-testid="input-datetime" value="2024-06-15T09:30">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Month <code>[type="month"]</code></div>
+                    <input type="month" id="input-month" name="month" data-testid="input-month" value="2024-06">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Week <code>[type="week"]</code></div>
+                    <input type="week" id="input-week" name="week" data-testid="input-week" value="2024-W24">
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             03 CHECKBOXES & RADIOS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-choices">
+            <div class="section-header">
+                <span class="section-num">03</span>
+                <span class="section-name">Checkboxes &amp; Radio Buttons</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group">
+                    <div class="field-label">Checkboxes <code>[type="checkbox"]</code></div>
+                    <div class="check-group">
+                        <label class="check-item">
+                            <input type="checkbox" id="chk-option1" name="options" value="option1" data-testid="chk-option1">
+                            Option One
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" id="chk-option2" name="options" value="option2" data-testid="chk-option2" checked>
+                            Option Two (pre-checked)
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" id="chk-option3" name="options" value="option3" data-testid="chk-option3">
+                            Option Three
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" id="chk-disabled" name="options" value="disabled" data-testid="chk-disabled" disabled>
+                            Disabled checkbox
+                        </label>
+                        <label class="check-item">
+                            <input type="checkbox" id="chk-checked-disabled" name="options" value="cd" data-testid="chk-checked-disabled" checked disabled>
+                            Disabled + checked
+                        </label>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Radio Buttons <code>[type="radio"]</code></div>
+                    <div class="radio-group" role="radiogroup" aria-label="Priority level">
+                        <label class="radio-item">
+                            <input type="radio" id="radio-low" name="priority" value="low" data-testid="radio-low">
+                            Low Priority
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" id="radio-medium" name="priority" value="medium" data-testid="radio-medium" checked>
+                            Medium Priority
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" id="radio-high" name="priority" value="high" data-testid="radio-high">
+                            High Priority
+                        </label>
+                        <label class="radio-item">
+                            <input type="radio" id="radio-critical" name="priority" value="critical" data-testid="radio-critical" disabled>
+                            Critical (disabled)
+                        </label>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             04 SELECT & DATALIST
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-select">
+            <div class="section-header">
+                <span class="section-num">04</span>
+                <span class="section-name">Select Dropdowns &amp; Datalist</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group">
+                    <div class="field-label">Single select <code>&lt;select&gt;</code></div>
+                    <select id="select-single" name="country" data-testid="select-single">
+                        <option value="">-- Choose a country --</option>
+                        <option value="us">United States</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="in" selected>India</option>
+                        <option value="de">Germany</option>
+                        <option value="jp">Japan</option>
+                        <option value="au">Australia</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Multi-select <code>[multiple]</code></div>
+                    <select id="select-multi" name="skills" data-testid="select-multi" multiple size="5">
+                        <option value="html">HTML</option>
+                        <option value="css">CSS</option>
+                        <option value="js" selected>JavaScript</option>
+                        <option value="py" selected>Python</option>
+                        <option value="ts">TypeScript</option>
+                        <option value="java">Java</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Disabled select</div>
+                    <select id="select-disabled" data-testid="select-disabled" disabled>
+                        <option>Cannot change me</option>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Select with optgroups</div>
+                    <select id="select-optgroup" data-testid="select-optgroup">
+                        <optgroup label="Frontend">
+                            <option value="react">React</option>
+                            <option value="vue">Vue</option>
+                            <option value="svelte">Svelte</option>
+                        </optgroup>
+                        <optgroup label="Backend">
+                            <option value="node">Node.js</option>
+                            <option value="django">Django</option>
+                            <option value="rails">Rails</option>
+                        </optgroup>
+                    </select>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Datalist <code>&lt;datalist&gt;</code></div>
+                    <input type="text" id="input-datalist" name="browser" data-testid="input-datalist" list="browsers-list" placeholder="Type to autocomplete…">
+                    <datalist id="browsers-list">
+                        <option value="Chrome">
+                        <option value="Firefox">
+                        <option value="Safari">
+                        <option value="Edge">
+                        <option value="Opera">
+                        <option value="Brave">
+                    </datalist>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             05 FILE & COLOR
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-file">
+            <div class="section-header">
+                <span class="section-num">05</span>
+                <span class="section-name">File Upload &amp; Color Picker</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group">
+                    <div class="field-label">Single file <code>[type="file"]</code></div>
+                    <input type="file" id="input-file" name="file" data-testid="input-file">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Multiple files <code>[multiple]</code></div>
+                    <input type="file" id="input-file-multi" name="files" data-testid="input-file-multi" multiple>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Accept images only <code>[accept]</code></div>
+                    <input type="file" id="input-file-img" name="image" data-testid="input-file-img" accept="image/*">
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Color picker <code>[type="color"]</code></div>
+                    <input type="color" id="input-color" name="color" data-testid="input-color" value="#c1440e">
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             06 RANGE & HIDDEN
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-range">
+            <div class="section-header">
+                <span class="section-num">06</span>
+                <span class="section-name">Range Slider &amp; Hidden Input</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group">
+                    <div class="field-label">Range <code>[type="range"]</code></div>
+                    <div>
+                        <input type="range" id="input-range" name="volume" data-testid="input-range" min="0" max="100" step="5" value="60"
+                               oninput="document.getElementById('range-val').textContent=this.value">
+                        <span style="font-size:0.75rem;color:var(--muted)">Value: <strong id="range-val">60</strong></span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Hidden <code>[type="hidden"]</code></div>
+                    <div style="font-size:0.75rem;color:var(--muted);padding-top:6px">
+                        Invisible but present in DOM:
+                        <input type="hidden" id="input-hidden" name="csrf_token" data-testid="input-hidden" value="abc123-secret-token">
+                        <code style="color:var(--tag)">value="abc123-secret-token"</code>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             07 BUTTONS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-buttons">
+            <div class="section-header">
+                <span class="section-num">07</span>
+                <span class="section-name">Buttons &amp; Button Types</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group full">
+                    <div class="field-label" style="margin-bottom:0.8rem">All button variants</div>
+                    <div class="btn-grid">
+                        <button type="button" class="btn-primary" id="btn-primary" data-testid="btn-primary" onclick="toast('Primary clicked!','success')">Primary</button>
+                        <button type="button" class="btn-secondary" id="btn-secondary" data-testid="btn-secondary" onclick="toast('Secondary clicked','info')">Secondary</button>
+                        <button type="button" class="btn-outline-blue" id="btn-outline-blue" data-testid="btn-outline-blue">Outline Blue</button>
+                        <button type="button" class="btn-outline-green" id="btn-outline-green" data-testid="btn-outline-green">Outline Green</button>
+                        <button type="button" id="btn-disabled" data-testid="btn-disabled" disabled>Disabled</button>
+                        <button type="button" id="btn-open-modal" data-testid="btn-open-modal" onclick="openModal()" class="btn-secondary">Open Modal</button>
+                        <button type="button" id="btn-double-click" data-testid="btn-double-click" class="btn-secondary" ondblclick="toast('Double click detected!','success')">Double Click me</button>
+                        <button type="button" id="btn-right-click" data-testid="btn-right-click" class="btn-secondary" oncontextmenu="event.preventDefault();toast('Right click caught!','info')">Right Click me</button>
+                    </div>
+                </div>
+
+                <div class="field-group full" style="margin-top:1rem">
+                    <div class="field-label" style="margin-bottom:0.8rem">Input button types</div>
+                    <div class="btn-grid">
+                        <input type="button" id="input-btn" data-testid="input-btn" value="input[type=button]" onclick="toast('input button clicked','info')">
+                        <input type="submit" id="input-submit" data-testid="input-submit" value="input[type=submit]">
+                        <input type="reset"  id="input-reset"  data-testid="input-reset"  value="input[type=reset]">
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             08 LINKS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-links">
+            <div class="section-header">
+                <span class="section-num">08</span>
+                <span class="section-name">Links &amp; Anchors</span>
+            </div>
+            <div class="section-body">
+                <div class="link-grid">
+                    <a href="#sec-text" id="link-internal" data-testid="link-internal">Internal anchor link</a>
+                    <a href="https://playwright.dev" id="link-external" data-testid="link-external" target="_blank" rel="noopener" class="link-external">playwright.dev</a>
+                    <a href="https://selenium.dev" id="link-selenium" data-testid="link-selenium" target="_blank" rel="noopener" class="link-external">selenium.dev</a>
+                    <a href="mailto:test@example.com" id="link-mailto" data-testid="link-mailto">mailto: link</a>
+                    <a href="tel:+15550001234" id="link-tel" data-testid="link-tel">tel: link</a>
+                    <a href="javascript:void(0)" id="link-void" data-testid="link-void" onclick="toast('JS void link clicked','info')">javascript:void(0)</a>
+                    <a href="#" id="link-hash" data-testid="link-hash" onclick="event.preventDefault()">href="#"</a>
+                    <a href="https://example.com" id="link-visited" data-testid="link-visited">Visited link test</a>
+                    <a href="data:text/plain,hello" download="test.txt" id="link-download" data-testid="link-download">Download link</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             09 FULL FORM
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-form">
+            <div class="section-header">
+                <span class="section-num">09</span>
+                <span class="section-name">Complete HTML Form</span>
+            </div>
+            <div class="section-body">
+                <form id="main-form" name="main-form" data-testid="main-form" novalidate
+                      onsubmit="event.preventDefault();toast('Form submitted! (prevented)','success')">
+
+                    <div class="field-group">
+                        <div class="field-label">Full name <code>required</code></div>
+                        <input type="text" name="fullname" id="form-name" data-testid="form-name" required placeholder="Jane Doe" autocomplete="name">
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-label">Email <code>required</code></div>
+                        <input type="email" name="email" id="form-email" data-testid="form-email" required placeholder="jane@example.com" autocomplete="email">
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-label">Department</div>
+                        <select name="department" id="form-dept" data-testid="form-dept">
+                            <option value="">Select…</option>
+                            <option value="eng">Engineering</option>
+                            <option value="qa">QA</option>
+                            <option value="pm">Product</option>
+                            <option value="design">Design</option>
+                        </select>
+                    </div>
+
+                    <div class="field-group">
+                        <div class="field-label">Experience (yrs)</div>
+                        <input type="number" name="experience" id="form-exp" data-testid="form-exp" min="0" max="50" placeholder="5">
+                    </div>
+
+                    <div class="field-group full">
+                        <div class="field-label" style="margin-bottom:0.5rem">Tools used</div>
+                        <div class="check-group" style="flex-direction:row;flex-wrap:wrap;gap:1rem">
+                            <label class="check-item"><input type="checkbox" name="tools" value="selenium" data-testid="form-chk-selenium"> Selenium</label>
+                            <label class="check-item"><input type="checkbox" name="tools" value="playwright" data-testid="form-chk-playwright" checked> Playwright</label>
+                            <label class="check-item"><input type="checkbox" name="tools" value="cypress" data-testid="form-chk-cypress"> Cypress</label>
+                            <label class="check-item"><input type="checkbox" name="tools" value="appium" data-testid="form-chk-appium"> Appium</label>
+                        </div>
+                    </div>
+
+                    <div class="field-group full">
+                        <div class="field-label" style="margin-bottom:0.5rem">Contract type</div>
+                        <div class="radio-group" style="flex-direction:row;gap:1.5rem">
+                            <label class="radio-item"><input type="radio" name="contract" value="full" data-testid="form-radio-full" checked> Full-time</label>
+                            <label class="radio-item"><input type="radio" name="contract" value="part" data-testid="form-radio-part"> Part-time</label>
+                            <label class="radio-item"><input type="radio" name="contract" value="contract" data-testid="form-radio-contract"> Contract</label>
+                        </div>
+                    </div>
+
+                    <div class="field-group full">
+                        <div class="field-label" style="margin-bottom:0.3rem">Bio</div>
+                        <textarea name="bio" id="form-bio" data-testid="form-bio" rows="3" placeholder="Short bio…"></textarea>
+                    </div>
+
+                    <div class="field-group full" style="margin-top:0.5rem">
+                        <div style="display:flex;gap:0.8rem;align-items:center">
+                            <label class="check-item">
+                                <input type="checkbox" name="agree" id="form-agree" data-testid="form-agree" required>
+                                I agree to the <a href="#">Terms &amp; Conditions</a>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:1.2rem;display:flex;gap:0.8rem">
+                        <button type="submit" class="btn-primary" id="form-submit" data-testid="form-submit">Submit Form</button>
+                        <button type="reset"  class="btn-secondary" id="form-reset" data-testid="form-reset">Reset</button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             10 TABLE
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-table">
+            <div class="section-header">
+                <span class="section-num">10</span>
+                <span class="section-name">Data Table</span>
+            </div>
+            <div class="section-body">
+                <table id="main-table" data-testid="main-table">
+                    <thead>
+                    <tr>
+                        <th data-testid="th-id">ID</th>
+                        <th data-testid="th-name">Name</th>
+                        <th data-testid="th-role">Role</th>
+                        <th data-testid="th-status">Status</th>
+                        <th data-testid="th-score">Score</th>
+                    </tr>
+                    </thead>
+                    <tbody id="table-body" data-testid="table-body">
+                    <tr data-testid="row-1">
+                        <td data-testid="row-1-id">001</td>
+                        <td data-testid="row-1-name">Alice Chen</td>
+                        <td data-testid="row-1-role">QA Lead</td>
+                        <td data-testid="row-1-status"><span style="color:var(--accent3)">● Active</span></td>
+                        <td data-testid="row-1-score">98</td>
+                    </tr>
+                    <tr data-testid="row-2">
+                        <td data-testid="row-2-id">002</td>
+                        <td data-testid="row-2-name">Bob Martinez</td>
+                        <td data-testid="row-2-role">SDET</td>
+                        <td data-testid="row-2-status"><span style="color:var(--accent3)">● Active</span></td>
+                        <td data-testid="row-2-score">85</td>
+                    </tr>
+                    <tr data-testid="row-3">
+                        <td data-testid="row-3-id">003</td>
+                        <td data-testid="row-3-name">Carol Kim</td>
+                        <td data-testid="row-3-role">Automation Eng</td>
+                        <td data-testid="row-3-status"><span style="color:var(--muted)">○ Inactive</span></td>
+                        <td data-testid="row-3-score">72</td>
+                    </tr>
+                    <tr data-testid="row-4">
+                        <td data-testid="row-4-id">004</td>
+                        <td data-testid="row-4-name">David Osei</td>
+                        <td data-testid="row-4-role">Test Manager</td>
+                        <td data-testid="row-4-status"><span style="color:var(--accent3)">● Active</span></td>
+                        <td data-testid="row-4-score">91</td>
+                    </tr>
+                    <tr data-testid="row-5">
+                        <td data-testid="row-5-id">005</td>
+                        <td data-testid="row-5-name">Eva Patel</td>
+                        <td data-testid="row-5-role">QA Engineer</td>
+                        <td data-testid="row-5-status"><span style="color:var(--accent2)">◐ On Leave</span></td>
+                        <td data-testid="row-5-score">79</td>
+                    </tr>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td colspan="4" data-testid="table-footer-label">Average Score</td>
+                        <td data-testid="table-footer-avg">85.0</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             11 LISTS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-list">
+            <div class="section-header">
+                <span class="section-num">11</span>
+                <span class="section-name">Lists</span>
+            </div>
+            <div class="section-body" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem">
+
+                <div>
+                    <div class="section-num" style="margin-bottom:0.5rem">Unordered &lt;ul&gt;</div>
+                    <ul id="list-ul" data-testid="list-ul" class="list-row">
+                        <li data-testid="li-ul-1">🔍 Locator strategies</li>
+                        <li data-testid="li-ul-2">⚡ Page Object Model</li>
+                        <li data-testid="li-ul-3">🔄 CI/CD integration</li>
+                        <li data-testid="li-ul-4">📸 Screenshot on fail</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <div class="section-num" style="margin-bottom:0.5rem">Ordered &lt;ol&gt;</div>
+                    <ol id="list-ol" data-testid="list-ol" class="list-row" style="counter-reset:item">
+                        <li data-testid="li-ol-1">Launch browser</li>
+                        <li data-testid="li-ol-2">Navigate to URL</li>
+                        <li data-testid="li-ol-3">Find elements</li>
+                        <li data-testid="li-ol-4">Assert state</li>
+                    </ol>
+                </div>
+
+                <div>
+                    <div class="section-num" style="margin-bottom:0.5rem">Definition &lt;dl&gt;</div>
+                    <dl id="list-dl" data-testid="list-dl">
+                        <dt data-testid="dt-1" style="font-weight:500;font-size:0.8rem;margin-top:0.5rem">Playwright</dt>
+                        <dd data-testid="dd-1" style="font-size:0.75rem;color:var(--muted);margin-left:1rem">Microsoft E2E framework</dd>
+                        <dt data-testid="dt-2" style="font-weight:500;font-size:0.8rem;margin-top:0.5rem">Selenium</dt>
+                        <dd data-testid="dd-2" style="font-size:0.75rem;color:var(--muted);margin-left:1rem">Browser automation library</dd>
+                    </dl>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             12 MEDIA ELEMENTS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-media">
+            <div class="section-header">
+                <span class="section-num">12</span>
+                <span class="section-name">Media Elements</span>
+            </div>
+            <div class="section-body" style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+                <div>
+                    <div class="section-num" style="margin-bottom:0.6rem">Image &lt;img&gt;</div>
+                    <img id="img-main" data-testid="img-main" src="https://via.placeholder.com/300x150/1a1612/f5f0e8?text=QA+Playground"
+                         alt="QA Playground placeholder image" style="width:100%;border:2px solid var(--border)">
+                </div>
+
+                <div>
+                    <div class="section-num" style="margin-bottom:0.6rem">Audio &lt;audio&gt;</div>
+                    <audio id="audio-main" data-testid="audio-main" controls style="width:100%">
+                        <source src="https://www.w3schools.com/html/horse.ogg" type="audio/ogg">
+                        <source src="https://www.w3schools.com/html/horse.mp3" type="audio/mpeg">
+                        Your browser does not support audio.
+                    </audio>
+
+                    <div class="section-num" style="margin-top:1.2rem;margin-bottom:0.6rem">Video &lt;video&gt;</div>
+                    <video id="video-main" data-testid="video-main" controls width="100%" style="border:2px solid var(--border)">
+                        <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                        Your browser does not support video.
+                    </video>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             13 MODAL
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-modal">
+            <div class="section-header">
+                <span class="section-num">13</span>
+                <span class="section-name">Modal Dialog</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">Tests: open/close, overlay click, keyboard Escape, focus trapping, aria attributes.</p>
+                <div class="btn-grid">
+                    <button type="button" class="btn-primary" data-testid="btn-modal-open" onclick="openModal()">Open Modal</button>
+                    <button type="button" class="btn-secondary" data-testid="btn-modal-open-2" onclick="openModal()">Open Modal (Alt trigger)</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             14 TABS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-tabs">
+            <div class="section-header">
+                <span class="section-num">14</span>
+                <span class="section-name">Tabs Component</span>
+            </div>
+            <div class="section-body">
+                <div id="tabs-container" data-testid="tabs-container">
+                    <div class="tabs-nav" role="tablist">
+                        <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-panel-1" id="tab-btn-1" data-testid="tab-btn-1" onclick="switchTab(1)">Overview</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-panel-2" id="tab-btn-2" data-testid="tab-btn-2" onclick="switchTab(2)">Details</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-panel-3" id="tab-btn-3" data-testid="tab-btn-3" onclick="switchTab(3)">Settings</button>
+                        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-panel-4" id="tab-btn-4" data-testid="tab-btn-4" onclick="switchTab(4)">Logs</button>
+                    </div>
+                    <div id="tab-panel-1" class="tab-panel active" role="tabpanel" aria-labelledby="tab-btn-1" data-testid="tab-panel-1">
+                        <strong>Overview Tab:</strong> This is the first tab panel. Switch tabs to test panel visibility. Each panel has a unique data-testid.
+                    </div>
+                    <div id="tab-panel-2" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-2" data-testid="tab-panel-2">
+                        <strong>Details Tab:</strong> Playwright locates this panel via role="tabpanel". Selenium finds it by ID or data-testid attribute.
+                    </div>
+                    <div id="tab-panel-3" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-3" data-testid="tab-panel-3">
+                        <strong>Settings Tab:</strong> You can also test keyboard navigation: Tab to focus, Arrow keys to switch, Enter to activate.
+                    </div>
+                    <div id="tab-panel-4" class="tab-panel" role="tabpanel" aria-labelledby="tab-btn-4" data-testid="tab-panel-4">
+                        <strong>Logs Tab:</strong> This panel can contain dynamically loaded content — test waitFor() patterns here.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             15 ACCORDION
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-accordion">
+            <div class="section-header">
+                <span class="section-num">15</span>
+                <span class="section-name">Accordion</span>
+            </div>
+            <div class="section-body">
+                <div id="accordion" data-testid="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" data-testid="accordion-trigger-1" onclick="toggleAccordion(1)">
+                            What is Playwright? <span class="arrow">▾</span>
+                        </button>
+                        <div class="accordion-body" id="accordion-body-1" data-testid="accordion-body-1">
+                            Playwright is a Node.js library to automate Chromium, Firefox and WebKit with a single API. It enables cross-browser web automation that is fast, reliable, and capable.
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" data-testid="accordion-trigger-2" onclick="toggleAccordion(2)">
+                            What is Selenium? <span class="arrow">▾</span>
+                        </button>
+                        <div class="accordion-body" id="accordion-body-2" data-testid="accordion-body-2">
+                            Selenium is an open-source framework for automating web browsers. It provides a suite of tools for browser automation and supports multiple programming languages.
+                        </div>
+                    </div>
+                    <div class="accordion-item">
+                        <button class="accordion-trigger" data-testid="accordion-trigger-3" onclick="toggleAccordion(3)">
+                            Key differences? <span class="arrow">▾</span>
+                        </button>
+                        <div class="accordion-body" id="accordion-body-3" data-testid="accordion-body-3">
+                            Playwright has auto-wait, network interception, and multi-tab support built in. Selenium requires external waits (WebDriverWait) and additional tools for similar functionality.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             16 TOAST / NOTIFICATIONS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-toast">
+            <div class="section-header">
+                <span class="section-num">16</span>
+                <span class="section-name">Toast Notifications</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">Toasts appear top-right and auto-dismiss after 3s. Test: appearance, text content, auto-dismiss timing.</p>
+                <div class="btn-grid">
+                    <button type="button" class="btn-outline-green" data-testid="btn-toast-success" onclick="toast('Operation succeeded!','success')">Success Toast</button>
+                    <button type="button" class="btn-outline-blue" data-testid="btn-toast-info" onclick="toast('Here is some information.','info')">Info Toast</button>
+                    <button type="button" class="btn-primary" data-testid="btn-toast-error" onclick="toast('Something went wrong!','error')">Error Toast</button>
+                    <button type="button" class="btn-secondary" data-testid="btn-toast-default" onclick="toast('Default notification')">Default Toast</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             17 DETAILS / SUMMARY
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-details">
+            <div class="section-header">
+                <span class="section-num">17</span>
+                <span class="section-name">Native Details / Summary</span>
+            </div>
+            <div class="section-body" style="display:flex;flex-direction:column;gap:0.5rem">
+
+                <details id="details-1" data-testid="details-1">
+                    <summary data-testid="summary-1">Browser Support Matrix</summary>
+                    <div class="details-body">
+                        Playwright supports Chromium, Firefox, WebKit. Selenium supports Chrome, Firefox, Edge, Safari via WebDriver.
+                    </div>
+                </details>
+
+                <details id="details-2" data-testid="details-2" open>
+                    <summary data-testid="summary-2">Pre-opened details (default open)</summary>
+                    <div class="details-body">
+                        This details block is open by default via the <code>open</code> attribute. Test that its content is immediately visible.
+                    </div>
+                </details>
+
+                <details id="details-3" data-testid="details-3">
+                    <summary data-testid="summary-3">Installation Commands</summary>
+                    <div class="details-body">
+                        Playwright: <code>npm init playwright@latest</code><br>
+                        Selenium (Python): <code>pip install selenium</code>
+                    </div>
+                </details>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             18 PROGRESS & METER
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-progress">
+            <div class="section-header">
+                <span class="section-num">18</span>
+                <span class="section-name">Progress &amp; Meter</span>
+            </div>
+            <div class="section-body">
+
+                <div class="field-group">
+                    <div class="field-label">Determinate <code>&lt;progress&gt;</code></div>
+                    <div>
+                        <progress id="progress-main" data-testid="progress-main" value="68" max="100"></progress>
+                        <span style="font-size:0.72rem;color:var(--muted)">68 / 100 tests passing</span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Indeterminate progress</div>
+                    <progress id="progress-indeterminate" data-testid="progress-indeterminate"></progress>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Meter <code>&lt;meter&gt;</code></div>
+                    <div>
+                        <meter id="meter-main" data-testid="meter-main" value="0.72" min="0" max="1" low="0.25" high="0.75" optimum="0.9"></meter>
+                        <span style="font-size:0.72rem;color:var(--muted)">Coverage: 72%</span>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <div class="field-label">Animated progress</div>
+                    <div>
+                        <progress id="progress-animated" data-testid="progress-animated" value="0" max="100"></progress>
+                        <button type="button" class="btn-secondary" style="margin-top:0.5rem;font-size:0.7rem;padding:0.3rem 0.8rem" data-testid="btn-progress-start" onclick="startProgress()">Start</button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             19 TOOLTIP
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-tooltip">
+            <div class="section-header">
+                <span class="section-num">19</span>
+                <span class="section-name">Tooltips</span>
+            </div>
+            <div class="section-body">
+                <div class="inline-row" style="gap:2rem;flex-wrap:wrap">
+                    <span data-tooltip="I am a CSS tooltip" data-testid="tooltip-1" style="border-bottom:2px dashed var(--border);cursor:help">Hover me (CSS tooltip)</span>
+                    <button type="button" class="btn-secondary" data-tooltip="Tooltips work on buttons too!" data-testid="tooltip-btn">Button with tooltip</button>
+                    <abbr title="End-to-End" data-testid="abbr-e2e" style="cursor:help">E2E</abbr>
+                    <abbr title="User Interface" data-testid="abbr-ui" style="cursor:help">UI</abbr>
+                    <abbr title="Quality Assurance" data-testid="abbr-qa" style="cursor:help">QA</abbr>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             20 IFRAME
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-iframe">
+            <div class="section-header">
+                <span class="section-num">20</span>
+                <span class="section-name">iFrame</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem">
+                    Playwright: <code>page.frameLocator('iframe')</code> — Selenium: <code>driver.switch_to.frame()</code>
+                </p>
+                <iframe id="iframe-main" name="iframe-main" data-testid="iframe-main" src="about:blank" height="180" title="Practice iFrame"
+                        style="background:var(--surface2)"></iframe>
+                <div style="margin-top:0.6rem;display:flex;gap:0.6rem">
+                    <button type="button" class="btn-secondary" data-testid="btn-iframe-load" style="font-size:0.72rem"
+                            onclick="loadIframe()">Load content into iFrame</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             21 CANVAS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-canvas">
+            <div class="section-header">
+                <span class="section-num">21</span>
+                <span class="section-name">Canvas (Draw)</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem">Click and drag to draw. Test mouse event sequences: mousedown, mousemove, mouseup.</p>
+                <canvas id="draw-canvas" data-testid="draw-canvas" width="600" height="200"></canvas>
+                <div style="margin-top:0.6rem;display:flex;gap:0.6rem;align-items:center">
+                    <button type="button" class="btn-secondary" data-testid="btn-canvas-clear" onclick="clearCanvas()">Clear Canvas</button>
+                    <input type="color" id="canvas-color" data-testid="canvas-color" value="#c1440e" style="height:32px;width:40px;padding:2px;border:2px solid var(--border)">
+                    <span style="font-size:0.72rem;color:var(--muted)">Pick pen color</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             22 DYNAMIC DOM
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-dynamic">
+            <div class="section-header">
+                <span class="section-num">22</span>
+                <span class="section-name">Dynamic DOM / Async Elements</span>
+            </div>
+            <div class="section-body">
+
+                <div style="margin-bottom:1.5rem">
+                    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem">Delayed element appearance — test waitForSelector / waitFor / explicit waits.</p>
+                    <div class="btn-grid">
+                        <button type="button" class="btn-primary" data-testid="btn-appear-500" onclick="showDelayed('dynamic-item-500',500)">Appear in 500ms</button>
+                        <button type="button" class="btn-secondary" data-testid="btn-appear-2000" onclick="showDelayed('dynamic-item-2000',2000)">Appear in 2s</button>
+                        <button type="button" class="btn-outline-blue" data-testid="btn-appear-5000" onclick="showDelayed('dynamic-item-5000',5000)">Appear in 5s</button>
+                    </div>
+                    <div id="dynamic-container" data-testid="dynamic-container" style="margin-top:0.8rem;min-height:40px;border:2px dashed var(--border);padding:0.5rem 1rem;font-size:0.8rem">
+                        <span id="dynamic-item-500" data-testid="dynamic-item-500" style="display:none;color:var(--accent3)">✓ 500ms element appeared</span>
+                        <span id="dynamic-item-2000" data-testid="dynamic-item-2000" style="display:none;color:var(--accent2);margin-left:1rem">✓ 2s element appeared</span>
+                        <span id="dynamic-item-5000" data-testid="dynamic-item-5000" style="display:none;color:var(--tag);margin-left:1rem">✓ 5s element appeared</span>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:1.5rem">
+                    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem">Add / remove DOM elements dynamically.</p>
+                    <div class="btn-grid">
+                        <button type="button" class="btn-primary" data-testid="btn-add-item" onclick="addListItem()">Add Item</button>
+                        <button type="button" class="btn-secondary" data-testid="btn-remove-item" onclick="removeListItem()">Remove Last</button>
+                        <button type="button" class="btn-outline-blue" data-testid="btn-clear-items" onclick="clearItems()">Clear All</button>
+                    </div>
+                    <ul id="dynamic-list" data-testid="dynamic-list" style="margin-top:0.8rem;display:flex;flex-direction:column;gap:0.3rem;font-size:0.8rem"></ul>
+                </div>
+
+                <div>
+                    <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem">Element visibility toggle — test isVisible() / isHidden().</p>
+                    <div class="btn-grid">
+                        <button type="button" class="btn-secondary" data-testid="btn-toggle-visibility" onclick="toggleVisibility()">Toggle Visibility</button>
+                        <button type="button" class="btn-secondary" data-testid="btn-toggle-display" onclick="toggleDisplay()">Toggle Display (remove from layout)</button>
+                    </div>
+                    <div style="margin-top:0.8rem;display:flex;gap:1rem">
+                        <div id="visibility-box" data-testid="visibility-box" style="padding:0.6rem 1rem;background:var(--accent2);color:#fff;font-size:0.78rem">visibility:hidden target</div>
+                        <div id="display-box" data-testid="display-box" style="padding:0.6rem 1rem;background:var(--accent3);color:#fff;font-size:0.78rem">display:none target</div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             23 SHADOW DOM
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-shadow">
+            <div class="section-header">
+                <span class="section-num">23</span>
+                <span class="section-name">Shadow DOM</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:0.8rem;color:var(--muted);margin-bottom:0.8rem">
+                    Playwright pierces shadow DOM automatically. Selenium requires <code>execute_script</code> to access shadow roots.
+                </p>
+                <div id="shadow-host" data-testid="shadow-host"></div>
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             24 ARIA / ACCESSIBILITY
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-aria">
+            <div class="section-header">
+                <span class="section-num">24</span>
+                <span class="section-name">ARIA &amp; Accessibility Elements</span>
+            </div>
+            <div class="section-body">
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem">
+
+                    <div>
+                        <div class="section-num" style="margin-bottom:0.5rem">ARIA roles</div>
+                        <div style="display:flex;flex-direction:column;gap:0.5rem">
+                            <div role="alert" id="aria-alert" data-testid="aria-alert" style="padding:0.5rem 0.8rem;background:#fff0ed;border-left:3px solid var(--accent);font-size:0.78rem">
+                                ⚠ This is role="alert" — screen readers announce immediately.
+                            </div>
+                            <div role="status" id="aria-status" data-testid="aria-status" style="padding:0.5rem 0.8rem;background:#edf6ff;border-left:3px solid var(--accent2);font-size:0.78rem">
+                                ✔ role="status" — polite live region
+                            </div>
+                            <div role="log" id="aria-log" data-testid="aria-log" aria-live="polite" style="padding:0.5rem 0.8rem;background:var(--surface2);border-left:3px solid var(--border);font-size:0.78rem;max-height:80px;overflow-y:auto">
+                                role="log" container
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="section-num" style="margin-bottom:0.5rem">Playwright getByRole() targets</div>
+                        <div style="display:flex;flex-direction:column;gap:0.5rem">
+                            <button type="button" role="button" aria-label="Save document" data-testid="aria-btn-save" class="btn-secondary">Save (aria-label)</button>
+                            <a href="#" role="link" aria-label="Go to home page" data-testid="aria-link-home">Home (aria-label on link)</a>
+                            <input type="text" role="searchbox" aria-label="Search users" data-testid="aria-searchbox" placeholder="Search users…" style="width:100%;padding:0.4rem 0.6rem;border:2px solid var(--border);background:var(--bg);font-family:'DM Mono',monospace;font-size:0.8rem">
+                            <div role="checkbox" aria-checked="false" tabindex="0" data-testid="aria-checkbox-custom" id="aria-custom-check"
+                                 style="padding:0.4rem 0.8rem;border:2px solid var(--border);font-size:0.78rem;cursor:pointer;user-select:none"
+                                 onclick="toggleAriaCheck(this)" onkeydown="if(event.key==='Enter'||event.key===' ')toggleAriaCheck(this)">
+                                ☐ Custom ARIA checkbox (role="checkbox")
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ═══════════════════════════════
+             25 BROWSER ALERTS
+        ═══════════════════════════════ -->
+        <section class="section" id="sec-alerts">
+            <div class="section-header">
+                <span class="section-num">25</span>
+                <span class="section-name">Browser Alerts &amp; Dialogs</span>
+            </div>
+            <div class="section-body">
+                <p style="font-size:0.8rem;color:var(--muted);margin-bottom:1rem">
+                    Playwright: <code>page.on('dialog', d =&gt; d.accept())</code> — Selenium: <code>driver.switch_to.alert</code>
+                </p>
+                <div class="btn-grid">
+                    <button type="button" class="btn-primary" data-testid="btn-alert" onclick="window.alert('This is a window.alert!')">Alert</button>
+                    <button type="button" class="btn-secondary" data-testid="btn-confirm" onclick="handleConfirm()">Confirm</button>
+                    <button type="button" class="btn-outline-blue" data-testid="btn-prompt" onclick="handlePrompt()">Prompt</button>
+                    <button type="button" class="btn-secondary" data-testid="btn-beforeunload" onclick="setupBeforeUnload()">Arm beforeunload</button>
+                </div>
+                <div id="alert-result" data-testid="alert-result" style="margin-top:0.8rem;font-size:0.8rem;color:var(--muted);min-height:1.2rem"></div>
+            </div>
+        </section>
+
+    </main>
+</div>
+
+<script>
+    // ── MODAL ──
+    function openModal() {
+        document.getElementById('modal-overlay').classList.add('open');
+        document.querySelector('[data-testid="modal-confirm"]').focus();
+    }
+    function closeModal() {
+        document.getElementById('modal-overlay').classList.remove('open');
+    }
+    document.getElementById('modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // ── TOAST ──
+    let toastCount = 0;
+    function toast(msg, type = 'default') {
+        const area = document.getElementById('toast-area');
+        const t = document.createElement('div');
+        t.className = `toast ${type}`;
+        t.id = `toast-${++toastCount}`;
+        t.dataset.testid = `toast-${toastCount}`;
+        t.textContent = msg;
+        area.appendChild(t);
+        setTimeout(() => t.remove(), 3200);
+    }
+
+    // ── TABS ──
+    function switchTab(n) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => {
+            b.classList.toggle('active', i + 1 === n);
+            b.setAttribute('aria-selected', i + 1 === n);
+        });
+        document.querySelectorAll('.tab-panel').forEach((p, i) => {
+            p.classList.toggle('active', i + 1 === n);
+        });
+    }
+
+    // ── ACCORDION ──
+    function toggleAccordion(n) {
+        const trigger = document.querySelector(`[data-testid="accordion-trigger-${n}"]`);
+        const body = document.getElementById(`accordion-body-${n}`);
+        trigger.classList.toggle('open');
+        body.classList.toggle('open');
+    }
+
+    // ── PROGRESS ANIMATED ──
+    let progressInterval = null;
+    function startProgress() {
+        const bar = document.getElementById('progress-animated');
+        bar.value = 0;
+        clearInterval(progressInterval);
+        progressInterval = setInterval(() => {
+            bar.value += 2;
+            if (bar.value >= 100) clearInterval(progressInterval);
+        }, 60);
+    }
+
+    // ── IFRAME ──
+    function loadIframe() {
+        const iframe = document.getElementById('iframe-main');
+        const doc = iframe.contentDocument || iframe.contentWindow.document;
+        doc.open();
+        doc.write(`
+    <html><body style="font-family:monospace;padding:1rem;background:#f5f0e8;color:#1a1612">
+      <h3 style="font-size:0.9rem">Inside the iFrame</h3>
+      <p style="font-size:0.8rem;margin-top:0.5rem">This content is inside an iframe document.</p>
+      <input type="text" id="iframe-input" data-testid="iframe-input" placeholder="Type inside iframe…"
+        style="margin-top:0.8rem;padding:0.4rem 0.6rem;border:2px solid #c8bfaf;font-family:monospace;font-size:0.8rem;width:80%">
+      <button id="iframe-btn" data-testid="iframe-btn" onclick="alert('Button inside iframe!')"
+        style="margin-top:0.5rem;display:block;padding:0.4rem 0.9rem;background:#c1440e;color:#fff;border:none;font-family:monospace;cursor:pointer">
+        Click me (iframe button)
+      </button>
+    </body></html>
+  `);
+        doc.close();
+    }
+
+    // ── CANVAS ──
+    (function() {
+        const canvas = document.getElementById('draw-canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.strokeStyle = '#c1440e';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        let drawing = false;
+
+        function getPos(e) {
+            const r = canvas.getBoundingClientRect();
+            const src = e.touches ? e.touches[0] : e;
+            return { x: src.clientX - r.left, y: src.clientY - r.top };
+        }
+
+        canvas.addEventListener('mousedown', e => { drawing = true; const p = getPos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); });
+        canvas.addEventListener('mousemove', e => { if (!drawing) return; const p = getPos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); });
+        canvas.addEventListener('mouseup', () => drawing = false);
+        canvas.addEventListener('mouseleave', () => drawing = false);
+
+        document.getElementById('canvas-color').addEventListener('input', function() {
+            ctx.strokeStyle = this.value;
+        });
+
+        window.clearCanvas = function() { ctx.clearRect(0, 0, canvas.width, canvas.height); };
+    })();
+
+    // ── DYNAMIC DOM ──
+    let dynCount = 0;
+    function showDelayed(id, ms) {
+        const el = document.getElementById(id);
+        el.style.display = 'none';
+        setTimeout(() => { el.style.display = 'inline'; }, ms);
+    }
+
+    function addListItem() {
+        const list = document.getElementById('dynamic-list');
+        const li = document.createElement('li');
+        li.dataset.testid = `dynamic-list-item-${++dynCount}`;
+        li.style.cssText = 'padding:0.3rem 0.6rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center';
+        li.innerHTML = `<span>Dynamic item #${dynCount}</span><button onclick="this.parentNode.remove()" style="border:none;background:none;color:var(--accent);cursor:pointer;font-size:0.75rem;box-shadow:none">✕</button>`;
+        list.appendChild(li);
+    }
+
+    function removeListItem() {
+        const list = document.getElementById('dynamic-list');
+        if (list.lastChild) list.removeChild(list.lastChild);
+    }
+
+    function clearItems() { document.getElementById('dynamic-list').innerHTML = ''; }
+
+    let visHidden = false;
+    let dispHidden = false;
+
+    function toggleVisibility() {
+        visHidden = !visHidden;
+        document.getElementById('visibility-box').style.visibility = visHidden ? 'hidden' : 'visible';
+    }
+
+    function toggleDisplay() {
+        dispHidden = !dispHidden;
+        document.getElementById('display-box').style.display = dispHidden ? 'none' : 'block';
+    }
+
+    // ── SHADOW DOM ──
+    (function() {
+        const host = document.getElementById('shadow-host');
+        const shadow = host.attachShadow({ mode: 'open' });
+        shadow.innerHTML = `
+    <style>
+      :host { display:block; }
+      .shadow-box { background:#f0ecff; border:2px solid #c8a8f0; padding:1rem 1.2rem; font-family:'DM Mono',monospace; }
+      .shadow-title { font-size:0.7rem; letter-spacing:2px; text-transform:uppercase; color:#6b3fa0; margin-bottom:0.8rem; }
+      input { padding:0.4rem 0.6rem; border:2px solid #c8a8f0; font-family:'DM Mono',monospace; font-size:0.8rem; width:100%; margin-bottom:0.5rem; }
+      button { padding:0.4rem 0.9rem; background:#6b3fa0; color:#fff; border:none; font-family:'DM Mono',monospace; font-size:0.75rem; cursor:pointer; }
+    </style>
+    <div class="shadow-box">
+      <div class="shadow-title">⬡ Inside Shadow DOM</div>
+      <input type="text" id="shadow-input" placeholder="Shadow DOM input…">
+      <button id="shadow-btn" onclick="this.nextElementSibling.textContent='Shadow button clicked!'">Shadow Button</button>
+      <p id="shadow-output" style="font-size:0.75rem;margin-top:0.5rem;color:#6b3fa0"></p>
+    </div>
+  `;
+    })();
+
+    // ── ARIA CUSTOM CHECKBOX ──
+    function toggleAriaCheck(el) {
+        const checked = el.getAttribute('aria-checked') === 'true';
+        el.setAttribute('aria-checked', !checked);
+        el.textContent = (!checked ? '☑' : '☐') + ' Custom ARIA checkbox (role="checkbox")';
+    }
+
+    // ── ALERTS ──
+    function handleConfirm() {
+        const r = window.confirm('Do you confirm this action?');
+        document.getElementById('alert-result').textContent = `Confirm result: ${r ? 'OK (true)' : 'Cancel (false)'}`;
+    }
+
+    function handlePrompt() {
+        const r = window.prompt('Enter your automation framework:', 'Playwright');
+        document.getElementById('alert-result').textContent = r !== null ? `Prompt result: "${r}"` : 'Prompt cancelled';
+    }
+
+    function setupBeforeUnload() {
+        window.onbeforeunload = () => {
+            window.onbeforeunload = null;
+            return 'Are you sure you want to leave? (beforeunload armed — reload to trigger)';
+        };
+        document.getElementById('alert-result').textContent = 'beforeunload handler armed. Try refreshing the page.';
+        toast('beforeunload armed — try reloading', 'info');
+    }
+</script>
+</body>
+</html>

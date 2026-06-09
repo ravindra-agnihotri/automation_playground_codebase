@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Shadow Host Playground</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            max-width:1000px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 2px 10px rgba(0,0,0,.1);
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>
+            Shadow Host Playground
+        </h1>
+
+        <p>
+            Open Shadow Root Example
+        </p>
+
+        <shadow-host>
+        </shadow-host>
+
+    </div>
+
+</div>
+
+<script
+        type="module"
+        src="shadow-host.js">
+</script>
+
+</body>
+</html>

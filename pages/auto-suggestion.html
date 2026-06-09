@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Auto Suggestion Playground</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            max-width:900px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:#fff;
+            padding:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        .input-wrapper{
+            position:relative;
+        }
+
+        #searchInput{
+            width:100%;
+            padding:12px;
+            font-size:16px;
+        }
+
+        #suggestionContainer{
+            position:absolute;
+            top:100%;
+            left:0;
+            right:0;
+            background:#fff;
+            border:1px solid #ddd;
+            max-height:250px;
+            overflow-y:auto;
+            display:none;
+            z-index:999;
+        }
+
+        .suggestion-item{
+            padding:12px;
+            cursor:pointer;
+            border-bottom:1px solid #eee;
+        }
+
+        .suggestion-item:hover,
+        .suggestion-item.active{
+            background:#f5f5f5;
+        }
+
+        .loading{
+            padding:12px;
+            text-align:center;
+        }
+
+        .info-box{
+            margin-top:20px;
+            padding:15px;
+            background:#fafafa;
+            border:1px solid #ddd;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="card">
+
+        <h1>
+            Auto Suggestion Playground
+        </h1>
+
+        <p>
+            Google-style Auto Suggestion Demo
+        </p>
+
+        <div class="input-wrapper">
+
+            <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search Technology">
+
+            <div
+                    id="suggestionContainer">
+            </div>
+
+        </div>
+
+        <div class="info-box">
+
+            <h3>
+                Features Covered
+            </h3>
+
+            <ul>
+
+                <li>
+                    Auto Suggestions
+                </li>
+
+                <li>
+                    Keyboard Navigation
+                </li>
+
+                <li>
+                    AJAX Simulation
+                </li>
+
+                <li>
+                    Highlight Match
+                </li>
+
+                <li>
+                    Click Selection
+                </li>
+
+                <li>
+                    Enter Key Selection
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script src="../js/app.js"></script>
+<script src="../js/autosuggestion.js"></script>
+
+</body>
+</html>

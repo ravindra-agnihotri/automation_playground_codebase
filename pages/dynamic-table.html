@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table Playground</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Dynamic Table Playground</h1>
+
+    <div class="toolbar">
+
+        <input
+                type="text"
+                id="searchInput"
+                placeholder="Search Employee">
+
+        <button id="loadDataBtn">
+            Load Data
+        </button>
+
+        <button id="addRowBtn">
+            Add Row
+        </button>
+
+    </div>
+
+    <table id="employeeTable">
+
+        <thead>
+
+        <tr>
+
+            <th>
+                <input
+                        type="checkbox"
+                        id="selectAll">
+            </th>
+
+            <th>ID</th>
+            <th>Name</th>
+            <th>Department</th>
+            <th>Salary</th>
+            <th>Actions</th>
+
+        </tr>
+
+        </thead>
+
+        <tbody id="tableBody">
+
+        </tbody>
+
+    </table>
+
+    <div id="rowCount">
+
+        Total Rows : 0
+
+    </div>
+
+</div>
+
+<script src="../js/tables.js"></script>
+
+</body>
+</html>

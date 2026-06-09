@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1">
+
+    <title>Windows & Tabs Playground</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            margin:30px auto;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        button{
+            padding:10px 15px;
+            margin:5px;
+            cursor:pointer;
+        }
+
+        #windowCount{
+            font-weight:bold;
+            color:green;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Windows & Tabs Playground</h1>
+
+    <div class="card">
+
+        <h3>Open New Tab</h3>
+
+        <button id="newTabBtn">
+            Open Tab
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Open New Window</h3>
+
+        <button id="newWindowBtn">
+            Open Window
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Open Popup Window</h3>
+
+        <button id="popupBtn">
+            Open Popup
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Dynamic Multiple Windows</h3>
+
+        <button id="multiWindowBtn">
+            Open 3 Windows
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h3>Window Statistics</h3>
+
+        <p>
+
+            Opened Windows:
+
+            <span id="windowCount">
+
+0
+
+</span>
+
+        </p>
+
+    </div>
+
+</div>
+
+<script>
+
+    let count = 0;
+
+    function updateCount(){
+
+        document
+            .getElementById(
+                "windowCount")
+            .innerText = count;
+
+    }
+
+    /**************************
+     NEW TAB
+     **************************/
+
+    document
+        .getElementById(
+            "newTabBtn")
+        .onclick = ()=>{
+
+        window.open(
+            "child-window.html",
+            "_blank"
+        );
+
+        count++;
+
+        updateCount();
+
+    };
+
+    /**************************
+     NEW WINDOW
+     **************************/
+
+    document
+        .getElementById(
+            "newWindowBtn")
+        .onclick = ()=>{
+
+        window.open(
+
+            "child-window.html",
+
+            "newWindow",
+
+            "width=700,height=500"
+
+        );
+
+        count++;
+
+        updateCount();
+
+    };
+
+    /**************************
+     POPUP
+     **************************/
+
+    document
+        .getElementById(
+            "popupBtn")
+        .onclick = ()=>{
+
+        window.open(
+
+            "popup-window.html",
+
+            "popup",
+
+            "width=500,height=400"
+
+        );
+
+        count++;
+
+        updateCount();
+
+    };
+
+    /**************************
+     MULTIPLE WINDOWS
+     **************************/
+
+    document
+        .getElementById(
+            "multiWindowBtn")
+        .onclick = ()=>{
+
+        for(let i=1;i<=3;i++){
+
+            window.open(
+
+                "child-window.html",
+
+                "_blank"
+
+            );
+
+            count++;
+
+        }
+
+        updateCount();
+
+    };
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag & Drop Playwright Playground</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+        :root {
+            --bg: #0d0d0f;
+            --surface: #16161a;
+            --surface2: #1e1e24;
+            --border: #2a2a35;
+            --accent: #00e5a0;
+            --accent2: #ff6b35;
+            --accent3: #7c6fff;
+            --text: #e8e8f0;
+            --muted: #6b6b80;
+            --drag-active: #00e5a033;
+            --drag-over: #00e5a066;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        header {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        header h1 {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+        }
+
+        header h1 span { color: var(--accent); }
+
+        header p {
+            color: var(--muted);
+            font-size: 0.78rem;
+            margin-top: 0.4rem;
+        }
+
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            font-family: 'Syne', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.4rem;
+        }
+
+        .section-desc {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        /* ===== SECTION 1: Basic drag between zones ===== */
+        .basic-zones {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border);
+            border-radius: 8px;
+            min-height: 140px;
+            padding: 1rem;
+            transition: border-color 0.2s, background 0.2s;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--accent);
+            background: var(--drag-over);
+        }
+
+        .drop-zone-label {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .draggable-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.6rem 1rem;
+            cursor: grab;
+            font-size: 0.8rem;
+            user-select: none;
+            transition: border-color 0.15s, transform 0.15s, opacity 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .draggable-item:hover { border-color: var(--accent); }
+        .draggable-item.dragging { opacity: 0.4; cursor: grabbing; }
+        .draggable-item .dot {
+            width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+        }
+
+        /* ===== SECTION 2: Sortable List ===== */
+        .sortable-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .sortable-item {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.7rem 1rem;
+            cursor: grab;
+            font-size: 0.8rem;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            transition: border-color 0.15s, transform 0.15s;
+        }
+
+        .sortable-item:hover { border-color: var(--accent3); }
+        .sortable-item.dragging { opacity: 0.3; }
+        .sortable-item.over { border-color: var(--accent3); border-style: dashed; }
+
+        .handle {
+            color: var(--muted);
+            font-size: 0.85rem;
+            cursor: grab;
+        }
+
+        .rank {
+            font-size: 0.65rem;
+            color: var(--muted);
+            width: 20px;
+            text-align: right;
+        }
+
+        /* ===== SECTION 3: Kanban ===== */
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+        }
+
+        .kanban-col {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1rem;
+            min-height: 200px;
+            transition: border-color 0.2s, background 0.2s;
+        }
+
+        .kanban-col.drag-over {
+            border-color: var(--accent2);
+            background: #ff6b3510;
+        }
+
+        .kanban-col-header {
+            font-size: 0.65rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .kanban-count {
+            background: var(--border);
+            border-radius: 10px;
+            padding: 1px 7px;
+            font-size: 0.65rem;
+        }
+
+        .kanban-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.7rem;
+            margin-bottom: 0.5rem;
+            cursor: grab;
+            font-size: 0.78rem;
+            user-select: none;
+            transition: border-color 0.15s;
+        }
+
+        .kanban-card:hover { border-color: var(--accent2); }
+        .kanban-card.dragging { opacity: 0.3; }
+        .kanban-card-tag {
+            font-size: 0.6rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--accent2);
+            margin-bottom: 0.3rem;
+        }
+
+        /* ===== SECTION 4: File Drop Zone ===== */
+        .file-drop-area {
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            padding: 3rem 2rem;
+            text-align: center;
+            transition: border-color 0.2s, background 0.2s;
+            cursor: pointer;
+        }
+
+        .file-drop-area.drag-over {
+            border-color: var(--accent);
+            background: var(--drag-active);
+        }
+
+        .file-drop-icon { font-size: 2.5rem; margin-bottom: 0.8rem; }
+        .file-drop-text { font-size: 0.85rem; color: var(--muted); }
+        .file-drop-text strong { color: var(--text); }
+
+        .file-list {
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+
+        .file-entry {
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 0.5rem 0.8rem;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+
+        .file-entry-icon { color: var(--accent); }
+
+        /* ===== SECTION 5: Grid Reorder ===== */
+        .grid-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.6rem;
+        }
+
+        .grid-cell {
+            aspect-ratio: 1;
+            background: var(--surface2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            font-size: 1.4rem;
+            transition: border-color 0.15s, background 0.15s;
+            position: relative;
+        }
+
+        .grid-cell:hover { border-color: var(--accent3); }
+        .grid-cell.dragging { opacity: 0.2; }
+        .grid-cell.over { border-color: var(--accent3); background: #7c6fff18; }
+        .grid-cell span { font-size: 0.6rem; color: var(--muted); font-family: 'JetBrains Mono'; }
+
+        /* ===== EVENT LOG ===== */
+        .log-section {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            width: 320px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 40px #00000088;
+            z-index: 999;
+        }
+
+        .log-header {
+            padding: 0.7rem 1rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--muted);
+        }
+
+        .log-clear {
+            cursor: pointer;
+            color: var(--accent2);
+            background: none;
+            border: none;
+            font-family: inherit;
+            font-size: 0.7rem;
+            letter-spacing: 1px;
+        }
+
+        .log-entries {
+            height: 160px;
+            overflow-y: auto;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 0.3rem;
+        }
+
+        .log-entry {
+            font-size: 0.68rem;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background: var(--surface2);
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-start;
+            animation: fadeIn 0.15s ease;
+        }
+
+        .log-time { color: var(--muted); flex-shrink: 0; }
+        .log-msg { color: var(--accent); word-break: break-all; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+        /* data-testid badges */
+        [data-testid] {
+            position: relative;
+        }
+
+        .testid-badge {
+            position: absolute;
+            top: 3px; right: 5px;
+            font-size: 0.5rem;
+            color: var(--muted);
+            opacity: 0.5;
+            pointer-events: none;
+            font-family: 'JetBrains Mono';
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Drag &amp; Drop <span>Playwright</span> Playground</h1>
+    <p>All major drag-and-drop patterns for E2E automation practice &mdash; HTML5 DnD API, mouse events, file drop, sortable, kanban, grid</p>
+</header>
+
+<!-- ===== SECTION 1: Basic drop zones ===== -->
+<div class="section">
+    <div class="section-label">Pattern 01</div>
+    <div class="section-title">Basic Drag Between Zones</div>
+    <div class="section-desc">HTML5 draggable API. Drag items from Zone A to Zone B and back. Uses dragstart, dragover, drop, dragleave events.</div>
+    <div class="basic-zones">
+        <div class="drop-zone" id="zone-a" data-testid="drop-zone-a">
+            <div class="drop-zone-label">Zone A</div>
+            <div class="draggable-item" draggable="true" data-testid="item-alpha" data-id="alpha">
+                <span class="dot" style="background:#00e5a0"></span> Alpha
+            </div>
+            <div class="draggable-item" draggable="true" data-testid="item-beta" data-id="beta">
+                <span class="dot" style="background:#ff6b35"></span> Beta
+            </div>
+            <div class="draggable-item" draggable="true" data-testid="item-gamma" data-id="gamma">
+                <span class="dot" style="background:#7c6fff"></span> Gamma
+            </div>
+        </div>
+        <div class="drop-zone" id="zone-b" data-testid="drop-zone-b">
+            <div class="drop-zone-label">Zone B</div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SECTION 2: Sortable List ===== -->
+<div class="section">
+    <div class="section-label">Pattern 02</div>
+    <div class="section-title">Sortable List Reorder</div>
+    <div class="section-desc">Drag rows up/down to reorder. Uses dragover with insertBefore logic. Common in task managers and priority queues.</div>
+    <div class="sortable-list" id="sortable-list" data-testid="sortable-list">
+        <div class="sortable-item" draggable="true" data-testid="sort-item-1" data-rank="1">
+            <span class="handle">⠿</span><span class="rank">#1</span> Deploy to production
+        </div>
+        <div class="sortable-item" draggable="true" data-testid="sort-item-2" data-rank="2">
+            <span class="handle">⠿</span><span class="rank">#2</span> Write unit tests
+        </div>
+        <div class="sortable-item" draggable="true" data-testid="sort-item-3" data-rank="3">
+            <span class="handle">⠿</span><span class="rank">#3</span> Code review
+        </div>
+        <div class="sortable-item" draggable="true" data-testid="sort-item-4" data-rank="4">
+            <span class="handle">⠿</span><span class="rank">#4</span> Update documentation
+        </div>
+        <div class="sortable-item" draggable="true" data-testid="sort-item-5" data-rank="5">
+            <span class="handle">⠿</span><span class="rank">#5</span> Fix flaky tests
+        </div>
+    </div>
+</div>
+
+<!-- ===== SECTION 3: Kanban ===== -->
+<div class="section">
+    <div class="section-label">Pattern 03</div>
+    <div class="section-title">Kanban Board</div>
+    <div class="section-desc">Drag cards between columns (Todo → In Progress → Done). Multi-container DnD. Column highlights on dragover.</div>
+    <div class="kanban-board">
+        <div class="kanban-col" id="kanban-todo" data-testid="kanban-col-todo">
+            <div class="kanban-col-header">Todo <span class="kanban-count" data-testid="kanban-todo-count">3</span></div>
+            <div class="kanban-card" draggable="true" data-testid="kanban-card-1" data-card="1">
+                <div class="kanban-card-tag">Feature</div>Add dark mode toggle
+            </div>
+            <div class="kanban-card" draggable="true" data-testid="kanban-card-2" data-card="2">
+                <div class="kanban-card-tag">Bug</div>Fix login redirect loop
+            </div>
+            <div class="kanban-card" draggable="true" data-testid="kanban-card-3" data-card="3">
+                <div class="kanban-card-tag">Chore</div>Upgrade dependencies
+            </div>
+        </div>
+        <div class="kanban-col" id="kanban-wip" data-testid="kanban-col-wip">
+            <div class="kanban-col-header">In Progress <span class="kanban-count" data-testid="kanban-wip-count">1</span></div>
+            <div class="kanban-card" draggable="true" data-testid="kanban-card-4" data-card="4">
+                <div class="kanban-card-tag">Feature</div>Implement search bar
+            </div>
+        </div>
+        <div class="kanban-col" id="kanban-done" data-testid="kanban-col-done">
+            <div class="kanban-col-header">Done <span class="kanban-count" data-testid="kanban-done-count">0</span></div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== SECTION 4: File Drop Zone ===== -->
+<div class="section">
+    <div class="section-label">Pattern 04</div>
+    <div class="section-title">File Drop Zone</div>
+    <div class="section-desc">Drop files from OS into the browser. Uses dataTransfer.files. Common in upload UIs. Playwright uses page.dispatchEvent() with DataTransfer for this.</div>
+    <div class="file-drop-area" id="file-drop" data-testid="file-drop-zone">
+        <div class="file-drop-icon">📂</div>
+        <div class="file-drop-text"><strong>Drop files here</strong><br>or click to browse</div>
+    </div>
+    <div class="file-list" id="file-list" data-testid="file-list"></div>
+</div>
+
+<!-- ===== SECTION 5: Grid Reorder ===== -->
+<div class="section">
+    <div class="section-label">Pattern 05</div>
+    <div class="section-title">Grid Tile Reorder</div>
+    <div class="section-desc">Swap emoji tiles in a 4×4 grid. Two-item swap on drop. Tests DnD on absolutely positioned elements in a grid layout.</div>
+    <div class="grid-board" id="grid-board" data-testid="grid-board"></div>
+</div>
+
+<!-- EVENT LOG -->
+<div class="log-section">
+    <div class="log-header">
+        Event Log
+        <button class="log-clear" id="log-clear" data-testid="log-clear">CLEAR</button>
+    </div>
+    <div class="log-entries" id="log-entries" data-testid="log-entries"></div>
+</div>
+
+<script>
+    // ===== LOGGER =====
+    function log(msg) {
+        const container = document.getElementById('log-entries');
+        const entry = document.createElement('div');
+        entry.className = 'log-entry';
+        const t = new Date().toLocaleTimeString('en', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        entry.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">${msg}</span>`;
+        container.prepend(entry);
+    }
+
+    document.getElementById('log-clear').addEventListener('click', () => {
+        document.getElementById('log-entries').innerHTML = '';
+    });
+
+    // ===== SECTION 1: Basic Zones =====
+    (function() {
+        let draggedEl = null;
+
+        document.querySelectorAll('.draggable-item').forEach(item => {
+            item.addEventListener('dragstart', e => {
+                draggedEl = item;
+                item.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', item.dataset.id);
+                e.dataTransfer.effectAllowed = 'move';
+                log(`dragstart → ${item.dataset.id}`);
+            });
+            item.addEventListener('dragend', () => {
+                item.classList.remove('dragging');
+                draggedEl = null;
+            });
+        });
+
+        document.querySelectorAll('.drop-zone').forEach(zone => {
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                zone.classList.add('drag-over');
+            });
+            zone.addEventListener('dragleave', e => {
+                if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+            });
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('drag-over');
+                const id = e.dataTransfer.getData('text/plain');
+                if (draggedEl) {
+                    zone.appendChild(draggedEl);
+                    log(`drop → ${id} into ${zone.dataset.testid}`);
+                }
+            });
+        });
+    })();
+
+    // ===== SECTION 2: Sortable List =====
+    (function() {
+        const list = document.getElementById('sortable-list');
+        let dragged = null;
+
+        list.addEventListener('dragstart', e => {
+            dragged = e.target.closest('.sortable-item');
+            if (!dragged) return;
+            dragged.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+            log(`sort dragstart → ${dragged.dataset.testid}`);
+        });
+
+        list.addEventListener('dragend', () => {
+            if (dragged) dragged.classList.remove('dragging');
+            document.querySelectorAll('.sortable-item').forEach(i => i.classList.remove('over'));
+            updateRanks();
+            dragged = null;
+        });
+
+        list.addEventListener('dragover', e => {
+            e.preventDefault();
+            const target = e.target.closest('.sortable-item');
+            if (!target || target === dragged) return;
+            document.querySelectorAll('.sortable-item').forEach(i => i.classList.remove('over'));
+            target.classList.add('over');
+            const rect = target.getBoundingClientRect();
+            const mid = rect.top + rect.height / 2;
+            if (e.clientY < mid) {
+                list.insertBefore(dragged, target);
+            } else {
+                list.insertBefore(dragged, target.nextSibling);
+            }
+        });
+
+        function updateRanks() {
+            list.querySelectorAll('.sortable-item').forEach((item, i) => {
+                item.querySelector('.rank').textContent = `#${i + 1}`;
+            });
+            log('sort order updated');
+        }
+    })();
+
+    // ===== SECTION 3: Kanban =====
+    (function() {
+        let draggedCard = null;
+
+        document.querySelectorAll('.kanban-card').forEach(card => {
+            card.addEventListener('dragstart', e => {
+                draggedCard = card;
+                card.classList.add('dragging');
+                e.dataTransfer.setData('text/plain', card.dataset.card);
+                e.dataTransfer.effectAllowed = 'move';
+                log(`kanban dragstart → card-${card.dataset.card}`);
+            });
+            card.addEventListener('dragend', () => {
+                card.classList.remove('dragging');
+                draggedCard = null;
+                updateKanbanCounts();
+            });
+        });
+
+        document.querySelectorAll('.kanban-col').forEach(col => {
+            col.addEventListener('dragover', e => {
+                e.preventDefault();
+                col.classList.add('drag-over');
+            });
+            col.addEventListener('dragleave', e => {
+                if (!col.contains(e.relatedTarget)) col.classList.remove('drag-over');
+            });
+            col.addEventListener('drop', e => {
+                e.preventDefault();
+                col.classList.remove('drag-over');
+                if (draggedCard) {
+                    col.appendChild(draggedCard);
+                    log(`kanban drop → card-${draggedCard.dataset.card} into ${col.dataset.testid}`);
+                    updateKanbanCounts();
+                }
+            });
+        });
+
+        function updateKanbanCounts() {
+            [['todo', 'kanban-todo-count'], ['wip', 'kanban-wip-count'], ['done', 'kanban-done-count']].forEach(([col, tid]) => {
+                const count = document.getElementById(`kanban-${col}`).querySelectorAll('.kanban-card').length;
+                document.querySelector(`[data-testid="${tid}"]`).textContent = count;
+            });
+        }
+    })();
+
+    // ===== SECTION 4: File Drop Zone =====
+    (function() {
+        const zone = document.getElementById('file-drop');
+        const list = document.getElementById('file-list');
+
+        zone.addEventListener('dragover', e => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            zone.classList.add('drag-over');
+        });
+        zone.addEventListener('dragleave', e => {
+            if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+        });
+        zone.addEventListener('drop', e => {
+            e.preventDefault();
+            zone.classList.remove('drag-over');
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length === 0) {
+                // Handle simulated file drop (Playwright test)
+                log('file drop → simulated (no real files)');
+                addFakeFile('test-file.txt', 1024);
+                return;
+            }
+            files.forEach(f => {
+                addFakeFile(f.name, f.size);
+                log(`file drop → ${f.name} (${f.size}B)`);
+            });
+        });
+
+        function addFakeFile(name, size) {
+            const entry = document.createElement('div');
+            entry.className = 'file-entry';
+            entry.dataset.testid = `file-entry-${name.replace(/\W/g, '-')}`;
+            entry.innerHTML = `<span class="file-entry-icon">📄</span>${name} <span style="color:var(--muted);margin-left:auto">${(size/1024).toFixed(1)}KB</span>`;
+            list.appendChild(entry);
+        }
+
+        // Click to trigger fake file drop (for testing purposes)
+        zone.addEventListener('click', () => {
+            addFakeFile(`upload-${Date.now()}.png`, Math.floor(Math.random() * 500000));
+            log('file click → fake file added');
+        });
+    })();
+
+    // ===== SECTION 5: Grid Reorder =====
+    (function() {
+        const emojis = ['🚀','⚡','🎯','🔥','💎','🌊','🎲','🧩','🌀','🎪','🦊','🎭','🔮','🎸','🌈','🍀'];
+        const board = document.getElementById('grid-board');
+        let dragSrc = null;
+
+        function buildGrid() {
+            board.innerHTML = '';
+            emojis.forEach((em, i) => {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell';
+                cell.draggable = true;
+                cell.dataset.testid = `grid-cell-${i}`;
+                cell.dataset.index = i;
+                cell.innerHTML = `${em}<span>[${i}]</span>`;
+                cell.addEventListener('dragstart', e => {
+                    dragSrc = cell;
+                    cell.classList.add('dragging');
+                    e.dataTransfer.setData('text/plain', String(i));
+                    e.dataTransfer.effectAllowed = 'move';
+                    log(`grid dragstart → cell-${i} ${em}`);
+                });
+                cell.addEventListener('dragend', () => {
+                    cell.classList.remove('dragging');
+                    board.querySelectorAll('.grid-cell').forEach(c => c.classList.remove('over'));
+                    dragSrc = null;
+                });
+                cell.addEventListener('dragover', e => {
+                    e.preventDefault();
+                    board.querySelectorAll('.grid-cell').forEach(c => c.classList.remove('over'));
+                    cell.classList.add('over');
+                });
+                cell.addEventListener('drop', e => {
+                    e.preventDefault();
+                    cell.classList.remove('over');
+                    if (!dragSrc || dragSrc === cell) return;
+                    // Swap innerHTML
+                    const srcHTML = dragSrc.innerHTML;
+                    const dstHTML = cell.innerHTML;
+                    dragSrc.innerHTML = dstHTML;
+                    cell.innerHTML = srcHTML;
+                    log(`grid swap → cell-${dragSrc.dataset.index} ↔ cell-${cell.dataset.index}`);
+                    // Update testid after swap
+                    const si = dragSrc.dataset.index;
+                    const di = cell.dataset.index;
+                    dragSrc.dataset.index = di;
+                    cell.dataset.index = si;
+                });
+                board.appendChild(cell);
+            });
+        }
+
+        buildGrid();
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1">
+
+    <title>Charts Playground</title>
+
+    <link rel="stylesheet"
+          href="../css/style.css">
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+
+        .container{
+            width:95%;
+            max-width:1400px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:white;
+            padding:20px;
+            margin-bottom:25px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        canvas{
+            max-height:400px;
+        }
+
+        button{
+            padding:10px 15px;
+            margin:5px;
+            cursor:pointer;
+        }
+
+        #chartMessage{
+            color:green;
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Charts Playground</h1>
+
+    <!-- BAR -->
+
+    <div class="card">
+
+        <h3>Bar Chart</h3>
+
+        <canvas id="barChart">
+        </canvas>
+
+    </div>
+
+    <!-- PIE -->
+
+    <div class="card">
+
+        <h3>Pie Chart</h3>
+
+        <canvas id="pieChart">
+        </canvas>
+
+    </div>
+
+    <!-- LINE -->
+
+    <div class="card">
+
+        <h3>Line Chart</h3>
+
+        <canvas id="lineChart">
+        </canvas>
+
+    </div>
+
+    <!-- ACTIONS -->
+
+    <div class="card">
+
+        <h3>Chart Actions</h3>
+
+        <button id="refreshBtn">
+
+            Refresh Data
+
+        </button>
+
+        <button id="addPointBtn">
+
+            Add Data Point
+
+        </button>
+
+        <button id="exportBtn">
+
+            Export Chart
+
+        </button>
+
+        <div id="chartMessage">
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    /*********************************
+     BAR CHART
+     **********************************/
+
+    const barCtx =
+        document
+            .getElementById(
+                "barChart"
+            );
+
+    const barChart =
+        new Chart(barCtx,{
+
+            type:'bar',
+
+            data:{
+
+                labels:[
+                    'Jan',
+                    'Feb',
+                    'Mar',
+                    'Apr'
+                ],
+
+                datasets:[{
+
+                    label:'Sales',
+
+                    data:[
+                        12,
+                        19,
+                        8,
+                        15
+                    ]
+
+                }]
+
+            }
+
+        });
+
+    /*********************************
+     PIE CHART
+     **********************************/
+
+    const pieChart =
+        new Chart(
+
+            document
+                .getElementById(
+                    "pieChart"
+                ),
+
+            {
+
+                type:'pie',
+
+                data:{
+
+                    labels:[
+                        'Java',
+                        'Selenium',
+                        'Playwright'
+                    ],
+
+                    datasets:[{
+
+                        data:[
+                            40,
+                            35,
+                            25
+                        ]
+
+                    }]
+
+                }
+
+            }
+
+        );
+
+    /*********************************
+     LINE CHART
+     **********************************/
+
+    const lineChart =
+        new Chart(
+
+            document
+                .getElementById(
+                    "lineChart"
+                ),
+
+            {
+
+                type:'line',
+
+                data:{
+
+                    labels:[
+                        'Q1',
+                        'Q2',
+                        'Q3',
+                        'Q4'
+                    ],
+
+                    datasets:[{
+
+                        label:'Revenue',
+
+                        data:[
+                            100,
+                            200,
+                            150,
+                            300
+                        ]
+
+                    }]
+
+                }
+
+            }
+
+        );
+
+    /*********************************
+     REFRESH
+     **********************************/
+
+    document
+        .getElementById(
+            "refreshBtn")
+        .onclick = ()=>{
+
+        barChart.data.datasets[0]
+            .data = [
+
+            15,
+            25,
+            18,
+            30
+
+        ];
+
+        barChart.update();
+
+        document
+            .getElementById(
+                "chartMessage")
+            .innerText =
+
+            "Chart Refreshed";
+
+    };
+
+    /*********************************
+     ADD POINT
+     **********************************/
+
+    document
+        .getElementById(
+            "addPointBtn")
+        .onclick = ()=>{
+
+        lineChart.data.labels
+            .push("New");
+
+        lineChart.data.datasets[0]
+            .data.push(
+
+            Math.floor(
+                Math.random()*300
+            )
+
+        );
+
+        lineChart.update();
+
+    };
+
+    /*********************************
+     EXPORT
+     **********************************/
+
+    document
+        .getElementById(
+            "exportBtn")
+        .onclick = ()=>{
+
+        const image =
+
+            barChart
+                .toBase64Image();
+
+        const link =
+            document
+                .createElement("a");
+
+        link.href =
+            image;
+
+        link.download =
+            "bar-chart.png";
+
+        link.click();
+
+    };
+
+</script>
+
+</body>
+</html>

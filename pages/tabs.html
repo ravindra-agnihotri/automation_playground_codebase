@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><!DOCTYPE html>
+      <html lang="en">
+      <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+      <title>Tab & Window Test Lab</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600&display=swap');
+
+    :root {
+      --bg:       #0d0f14;
+      --surface:  #161920;
+      --card:     #1c2030;
+      --border:   #2a2f42;
+      --accent:   #5b8af5;
+      --accent2:  #a78bfa;
+      --accent3:  #34d399;
+      --warn:     #f59e0b;
+      --danger:   #f87171;
+      --text:     #e2e8f0;
+      --muted:    #6b7280;
+      --tag-bg:   #1e2535;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1.5rem 4rem;
+    }
+
+    /* ── HEADER ─────────────────────────────── */
+    header {
+      max-width: 960px;
+      margin: 0 auto 2.5rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 1.5rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .logo-block { display: flex; flex-direction: column; gap: .3rem; }
+    .logo-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      color: var(--accent);
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    h1 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    h1 span { color: var(--accent); }
+    .badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem;
+      padding: .25rem .6rem;
+      border-radius: 4px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ── LAYOUT ─────────────────────────────── */
+    .main { max-width: 960px; margin: 0 auto; display: flex; flex-direction: column; gap: 2rem; }
+
+    /* ── SECTION ─────────────────────────────── */
+    .section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* ── CARD GRID ──────────────────────────── */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    /* ── CARD ───────────────────────────────── */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: .85rem;
+      transition: border-color .2s;
+    }
+    .card:hover { border-color: var(--accent); }
+    .card-head { display: flex; align-items: center; justify-content: space-between; }
+    .card-title {
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .card-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .65rem;
+      padding: .2rem .5rem;
+      border-radius: 4px;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+    }
+    .tag-blue  { color: var(--accent); }
+    .tag-purple{ color: var(--accent2); }
+    .tag-green { color: var(--accent3); }
+    .tag-warn  { color: var(--warn); }
+
+    .card-desc {
+      font-size: .8rem;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .card-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: auto; }
+
+    /* ── BUTTONS ─────────────────────────────── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      font-weight: 600;
+      padding: .45rem .85rem;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      transition: opacity .15s, transform .1s;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .btn:hover  { opacity: .85; }
+    .btn:active { transform: scale(.97); }
+
+    .btn-primary  { background: var(--accent);  color: #fff; }
+    .btn-purple   { background: var(--accent2); color: #fff; }
+    .btn-green    { background: var(--accent3); color: #0d0f14; }
+    .btn-warn     { background: var(--warn);    color: #0d0f14; }
+    .btn-danger   { background: var(--danger);  color: #fff; }
+    .btn-ghost    { background: var(--tag-bg);  color: var(--text); border: 1px solid var(--border); }
+
+    /* ── EVENT LOG ──────────────────────────── */
+    #log-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem 1.25rem;
+    }
+    #log-box h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: .75rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    #log-entries {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--accent3);
+      max-height: 150px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: .2rem;
+    }
+    .log-entry { display: flex; gap: .75rem; }
+    .log-time  { color: var(--muted); flex-shrink: 0; }
+    .log-msg   { color: var(--accent3); }
+    .log-empty { color: var(--muted); font-style: italic; }
+
+    /* ── WINDOW FEATURES TRIGGERS ───────────── */
+    .feature-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: .6rem;
+    }
+    .feature-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .65rem 1rem;
+      cursor: pointer;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--text);
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      transition: background .15s, border-color .15s;
+    }
+    .feature-btn:hover { background: var(--card); border-color: var(--accent); }
+    .feature-btn .icon { font-size: 1rem; }
+
+    /* ── TARGET FRAMES ──────────────────────── */
+    .iframe-demo {
+      border: 1px dashed var(--border);
+      border-radius: 6px;
+      padding: .75rem;
+      background: var(--surface);
+    }
+    .iframe-demo label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem;
+      color: var(--muted);
+      display: block;
+      margin-bottom: .5rem;
+    }
+
+    /* ── POPUP OVERLAY ──────────────────────── */
+    #popup-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.6);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    #popup-overlay.active { display: flex; }
+    #popup-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2rem;
+      max-width: 380px;
+      width: 90%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    #popup-box h2 { font-size: 1rem; color: var(--text); }
+    #popup-box p  { font-size: .82rem; color: var(--muted); }
+
+    /* ── COUNTERS ──────────────────────────── */
+    .counter-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .counter-chip {
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+      background: var(--tag-bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: .4rem .8rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .75rem;
+      color: var(--muted);
+    }
+    .counter-chip strong { color: var(--accent3); font-size: .9rem; }
+
+    /* ── ANCHOR TARGETS ─────────────────────── */
+    #section-alpha, #section-beta, #section-gamma {
+      scroll-margin-top: 1.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      color: var(--accent);
+    }
+
+    /* ── DATA IDS for automation ─────────────── */
+    /* All interactive elements have data-testid set */
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-block">
+    <span class="logo-label">Automation Test Lab</span>
+    <h1>Tab & <span>Window</span> Ops</h1>
+  </div>
+  <span class="badge" id="page-id">page: main</span>
+</header>
+
+<main class="main">
+
+  <!-- COUNTERS -->
+  <div class="counter-row">
+    <div class="counter-chip">Window opens <strong id="ctr-window">0</strong></div>
+    <div class="counter-chip">Tab opens <strong id="ctr-tab">0</strong></div>
+    <div class="counter-chip">Popups triggered <strong id="ctr-popup">0</strong></div>
+    <div class="counter-chip">Alert/Confirms <strong id="ctr-dialog">0</strong></div>
+  </div>
+
+  <!-- ① NEW TAB -->
+  <div>
+    <p class="section-title">New Tab Operations</p>
+    <div class="card-grid">
+
+      <div class="card" data-testid="card-blank-tab">
+        <div class="card-head">
+          <span class="card-title">Blank Tab</span>
+          <span class="card-tag tag-blue">_blank</span>
+        </div>
+        <p class="card-desc">Opens <code>about:blank</code> in a new tab. Switch handles to verify the new context.</p>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-testid="btn-blank-tab"
+                  onclick="openTab('about:blank','tab')">⊞ Open Blank Tab</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-url-tab">
+        <div class="card-head">
+          <span class="card-title">New Tab — Same Origin</span>
+          <span class="card-tag tag-blue">_blank</span>
+        </div>
+        <p class="card-desc">Opens this same page in a new tab with <code>?page=child</code> query param. Useful for multi-tab state tests.</p>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-testid="btn-same-origin-tab"
+                  onclick="openTab(location.href+'?page=child','tab')">⊞ Same-Origin Tab</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-anchor-tab">
+        <div class="card-head">
+          <span class="card-title">Anchor — _blank</span>
+          <span class="card-tag tag-blue">anchor</span>
+        </div>
+        <p class="card-desc">A plain <code>&lt;a target="_blank"&gt;</code> link. Tests your framework's ability to intercept or track anchor-driven tab opens.</p>
+        <div class="card-actions">
+          <a class="btn btn-ghost" data-testid="anchor-blank"
+             href="?page=anchor" target="_blank" rel="noopener">⊞ Anchor New Tab</a>
+          <a class="btn btn-ghost" data-testid="anchor-noreferrer"
+             href="?page=anchor-noreferrer" target="_blank" rel="noopener noreferrer">⊞ + noreferrer</a>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-delayed-tab">
+        <div class="card-head">
+          <span class="card-title">Delayed Tab Open</span>
+          <span class="card-tag tag-warn">async</span>
+        </div>
+        <p class="card-desc">Tab opens after a 2-second delay. Tests <code>wait_for_new_tab</code> / explicit waits before switching handles.</p>
+        <div class="card-actions">
+          <button class="btn btn-warn" data-testid="btn-delayed-tab"
+                  onclick="delayedOpen('?page=delayed',2000,'tab')">⏱ Delayed Tab (2s)</button>
+          <button class="btn btn-warn" data-testid="btn-delayed-tab-5"
+                  onclick="delayedOpen('?page=delayed',5000,'tab')">⏱ 5s Delay</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ② NEW WINDOW -->
+  <div>
+    <p class="section-title">New Window Operations</p>
+    <div class="card-grid">
+
+      <div class="card" data-testid="card-new-window">
+        <div class="card-head">
+          <span class="card-title">New Window</span>
+          <span class="card-tag tag-purple">window.open</span>
+        </div>
+        <p class="card-desc">Opens a 600×400 popup window. Switch to it by handle and interact. Use <code>getWindowHandles()</code>.</p>
+        <div class="card-actions">
+          <button class="btn btn-purple" data-testid="btn-new-window"
+                  onclick="openWindow('?page=popup-win',600,400)">⧉ Open Window</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-full-window">
+        <div class="card-head">
+          <span class="card-title">Full-Screen Window</span>
+          <span class="card-tag tag-purple">window.open</span>
+        </div>
+        <p class="card-desc">Opens a maximized window using <code>width=screen.width</code>. Tests size-agnostic element detection.</p>
+        <div class="card-actions">
+          <button class="btn btn-purple" data-testid="btn-full-window"
+                  onclick="openWindow('?page=full-win',screen.width,screen.height)">⧉ Full Window</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-named-window">
+        <div class="card-head">
+          <span class="card-title">Named Window</span>
+          <span class="card-tag tag-purple">target name</span>
+        </div>
+        <p class="card-desc">Every click reuses the same named window (<code>myTestWindow</code>). Tests that handle count doesn't grow unbounded.</p>
+        <div class="card-actions">
+          <button class="btn btn-purple" data-testid="btn-named-window"
+                  onclick="openNamed('?page=named-win','myTestWindow')">⧉ Named Window</button>
+          <button class="btn btn-purple" data-testid="btn-named-window-2"
+                  onclick="openNamed('?page=named-win-2','myTestWindow')">⧉ Reuse (diff URL)</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-windowless-popup">
+        <div class="card-head">
+          <span class="card-title">Chromeless Popup</span>
+          <span class="card-tag tag-warn">noopener risk</span>
+        </div>
+        <p class="card-desc">Opens without toolbar/menubar/scrollbars. Tests visibility of window chrome features via JS.</p>
+        <div class="card-actions">
+          <button class="btn btn-warn" data-testid="btn-chromeless"
+                  onclick="openChromeless('?page=chromeless')">⧉ Chromeless</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ③ DIALOG / ALERTS -->
+  <div>
+    <p class="section-title">Browser Dialogs</p>
+    <div class="card-grid">
+
+      <div class="card" data-testid="card-alert">
+        <div class="card-head">
+          <span class="card-title">Alert</span>
+          <span class="card-tag tag-green">dialog</span>
+        </div>
+        <p class="card-desc">Triggers a native <code>alert()</code>. Dismiss with <code>accept()</code>. No return value.</p>
+        <div class="card-actions">
+          <button class="btn btn-green" data-testid="btn-alert"
+                  onclick="trigAlert()">⚠ Trigger Alert</button>
+          <button class="btn btn-ghost" data-testid="btn-alert-delayed"
+                  onclick="delayedDialog('alert',2000)">⏱ Delayed Alert (2s)</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-confirm">
+        <div class="card-head">
+          <span class="card-title">Confirm</span>
+          <span class="card-tag tag-green">dialog</span>
+        </div>
+        <p class="card-desc">Triggers <code>confirm()</code>. Accept returns <code>true</code>, dismiss returns <code>false</code>. Result shown in log.</p>
+        <div class="card-actions">
+          <button class="btn btn-green" data-testid="btn-confirm"
+                  onclick="trigConfirm()">? Trigger Confirm</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-prompt">
+        <div class="card-head">
+          <span class="card-title">Prompt</span>
+          <span class="card-tag tag-green">dialog</span>
+        </div>
+        <p class="card-desc">Triggers <code>prompt()</code>. Send keys before accepting. Dismiss returns <code>null</code>.</p>
+        <div class="card-actions">
+          <button class="btn btn-green" data-testid="btn-prompt"
+                  onclick="trigPrompt()">✎ Trigger Prompt</button>
+          <button class="btn btn-ghost" data-testid="btn-prompt-prefilled"
+                  onclick="trigPromptPrefilled()">✎ Pre-filled Prompt</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-before-unload">
+        <div class="card-head">
+          <span class="card-title">beforeunload</span>
+          <span class="card-tag tag-warn">navigation guard</span>
+        </div>
+        <p class="card-desc">Enables a <code>beforeunload</code> listener. Then click "Navigate Away" to trigger the leave-page dialog.</p>
+        <div class="card-actions">
+          <button class="btn btn-warn" id="btn-enable-unload" data-testid="btn-enable-unload"
+                  onclick="enableBeforeUnload()">⚙ Arm Guard</button>
+          <button class="btn btn-danger" data-testid="btn-navigate-away" disabled id="btn-away"
+                  onclick="location.href='?page=navigated'">↪ Navigate Away</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ④ POPUPS / OVERLAY -->
+  <div>
+    <p class="section-title">In-page Popup & Overlay</p>
+    <div class="card-grid">
+
+      <div class="card" data-testid="card-modal">
+        <div class="card-head">
+          <span class="card-title">Modal Overlay</span>
+          <span class="card-tag tag-blue">in-page</span>
+        </div>
+        <p class="card-desc">A CSS overlay modal. Close with the button or click outside. Useful for focus-trap and dismiss tests.</p>
+        <div class="card-actions">
+          <button class="btn btn-primary" data-testid="btn-open-modal"
+                  onclick="openModal()">⬜ Open Modal</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-window-open-popup">
+        <div class="card-head">
+          <span class="card-title">window.open() Popup</span>
+          <span class="card-tag tag-purple">native</span>
+        </div>
+        <p class="card-desc">True browser popup via <code>window.open</code> (300×250). Tests your framework's popup handle acquisition.</p>
+        <div class="card-actions">
+          <button class="btn btn-purple" data-testid="btn-native-popup"
+                  onclick="openWindow('?page=native-popup',300,250)">⬡ Native Popup</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ⑤ NAVIGATION -->
+  <div>
+    <p class="section-title">Navigation & History</p>
+    <div class="card-grid">
+
+      <div class="card" data-testid="card-history">
+        <div class="card-head">
+          <span class="card-title">History Navigation</span>
+          <span class="card-tag tag-green">browser history</span>
+        </div>
+        <p class="card-desc">Navigate forward/back through history. Tests <code>driver.back()</code>, <code>driver.forward()</code>.</p>
+        <div class="card-actions">
+          <button class="btn btn-green" data-testid="btn-push-state"
+                  onclick="pushState()">+ Push State</button>
+          <button class="btn btn-ghost" data-testid="btn-go-back"
+                  onclick="history.back()">← Back</button>
+          <button class="btn btn-ghost" data-testid="btn-go-forward"
+                  onclick="history.forward()">→ Forward</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-reload">
+        <div class="card-head">
+          <span class="card-title">Page Reload</span>
+          <span class="card-tag tag-warn">reload</span>
+        </div>
+        <p class="card-desc">Hard and soft reload. Tests state preservation on reload + <code>driver.navigate().refresh()</code>.</p>
+        <div class="card-actions">
+          <button class="btn btn-warn" data-testid="btn-soft-reload"
+                  onclick="location.reload()">↺ Soft Reload</button>
+          <button class="btn btn-danger" data-testid="btn-hard-reload"
+                  onclick="location.reload(true)">↺ Hard Reload</button>
+        </div>
+      </div>
+
+      <div class="card" data-testid="card-anchor-scroll">
+        <div class="card-head">
+          <span class="card-title">Anchor Scroll Targets</span>
+          <span class="card-tag tag-blue">in-page</span>
+        </div>
+        <p class="card-desc">Scroll to named anchors on this page. Tests in-page navigation without a new handle.</p>
+        <div class="card-actions">
+          <a class="btn btn-ghost" data-testid="anchor-alpha" href="#section-alpha">§ Alpha</a>
+          <a class="btn btn-ghost" data-testid="anchor-beta"  href="#section-beta">§ Beta</a>
+          <a class="btn btn-ghost" data-testid="anchor-gamma" href="#section-gamma">§ Gamma</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ⑥ WINDOW FEATURES -->
+  <div>
+    <p class="section-title">Window Feature Triggers</p>
+    <div class="feature-row">
+      <button class="feature-btn" data-testid="btn-resize-window"
+              onclick="resizeWin(800,600); log('window resized → 800×600')">
+        <span class="icon">⤢</span> Resize to 800×600
+      </button>
+      <button class="feature-btn" data-testid="btn-move-window"
+              onclick="window.moveTo(100,100); log('window moved → 100,100')">
+        <span class="icon">↗</span> Move to 100,100
+      </button>
+      <button class="feature-btn" data-testid="btn-scroll-top"
+              onclick="window.scrollTo(0,0); log('scrolled to top')">
+        <span class="icon">⇧</span> Scroll to Top
+      </button>
+      <button class="feature-btn" data-testid="btn-scroll-bottom"
+              onclick="window.scrollTo(0,document.body.scrollHeight); log('scrolled to bottom')">
+        <span class="icon">⇩</span> Scroll to Bottom
+      </button>
+      <button class="feature-btn" data-testid="btn-print"
+              onclick="window.print(); log('print dialog opened')">
+        <span class="icon">🖨</span> window.print()
+      </button>
+      <button class="feature-btn" data-testid="btn-focus"
+              onclick="window.focus(); log('window.focus() called')">
+        <span class="icon">◎</span> window.focus()
+      </button>
+      <button class="feature-btn" data-testid="btn-blur"
+              onclick="window.blur(); log('window.blur() called')">
+        <span class="icon">○</span> window.blur()
+      </button>
+      <button class="feature-btn" data-testid="btn-close-self"
+              onclick="closeSelf()">
+        <span class="icon">✕</span> window.close() self
+      </button>
+    </div>
+  </div>
+
+  <!-- ⑦ EVENT LOG -->
+  <div id="log-box">
+    <h3>
+      Event Log
+      <button class="btn btn-ghost" style="font-size:.65rem;padding:.2rem .5rem" onclick="clearLog()">clear</button>
+    </h3>
+    <div id="log-entries">
+      <span class="log-empty" id="log-empty">No events yet — trigger an operation above.</span>
+    </div>
+  </div>
+
+  <!-- ⑧ ANCHOR SECTIONS -->
+  <div>
+    <p class="section-title">Anchor Target Sections</p>
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      <div id="section-alpha" data-testid="section-alpha">// section#alpha — scroll target A</div>
+      <div id="section-beta"  data-testid="section-beta"> // section#beta  — scroll target B</div>
+      <div id="section-gamma" data-testid="section-gamma">// section#gamma — scroll target C</div>
+    </div>
+  </div>
+
+</main>
+
+<!-- MODAL OVERLAY -->
+<div id="popup-overlay" data-testid="modal-overlay">
+  <div id="popup-box" data-testid="modal-box">
+    <h2>Modal Popup</h2>
+    <p>This overlay is rendered in-page. Dismiss with the button below or click outside the box.</p>
+    <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" data-testid="btn-modal-accept" onclick="closeModal('accepted')">Accept</button>
+      <button class="btn btn-ghost"   data-testid="btn-modal-dismiss" onclick="closeModal('dismissed')">Dismiss</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ── COUNTERS ─── */
+  const ctrs = { window: 0, tab: 0, popup: 0, dialog: 0 };
+  function incr(key) {
+    ctrs[key]++;
+    const el = document.getElementById('ctr-' + key);
+    if (el) el.textContent = ctrs[key];
+  }
+
+  /* ── LOG ─── */
+  function log(msg) {
+    const box = document.getElementById('log-entries');
+    const empty = document.getElementById('log-empty');
+    if (empty) empty.remove();
+    const t = new Date().toLocaleTimeString('en-US', { hour12: false });
+    const row = document.createElement('div');
+    row.className = 'log-entry';
+    row.innerHTML = `<span class="log-time">${t}</span><span class="log-msg">» ${msg}</span>`;
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+  }
+  function clearLog() {
+    const box = document.getElementById('log-entries');
+    box.innerHTML = `<span class="log-empty" id="log-empty">No events yet.</span>`;
+  }
+
+  /* ── TAB OPENS ─── */
+  function openTab(url, kind) {
+    window.open(url, '_blank');
+    if (kind === 'tab') incr('tab');
+    log(`new tab opened → ${url}`);
+  }
+
+  /* ── WINDOW OPENS ─── */
+  function openWindow(url, w, h) {
+    const left = Math.round((screen.width - w) / 2);
+    const top  = Math.round((screen.height - h) / 2);
+    window.open(url, '_blank', `width=${w},height=${h},left=${left},top=${top},resizable=yes,scrollbars=yes`);
+    incr('window');
+    log(`new window opened → ${url} (${w}×${h})`);
+  }
+  function openNamed(url, name) {
+    window.open(url, name, 'width=620,height=440,resizable=yes');
+    incr('window');
+    log(`named window "${name}" → ${url}`);
+  }
+  function openChromeless(url) {
+    window.open(url, '_blank', 'width=500,height=360,toolbar=no,menubar=no,scrollbars=no,location=no,status=no');
+    incr('window');
+    log('chromeless popup opened');
+  }
+
+  /* ── DELAYED OPENS ─── */
+  function delayedOpen(url, delay, kind) {
+    log(`delayed ${kind} armed — fires in ${delay/1000}s`);
+    setTimeout(() => {
+      window.open(url, '_blank');
+      if (kind === 'tab') incr('tab'); else incr('window');
+      log(`delayed ${kind} opened → ${url}`);
+    }, delay);
+  }
+
+  /* ── DIALOGS ─── */
+  function trigAlert() {
+    incr('dialog');
+    log('alert() fired');
+    alert('This is a test alert.\ndata-testid: btn-alert');
+    log('alert dismissed');
+  }
+  function trigConfirm() {
+    incr('dialog');
+    log('confirm() fired');
+    const result = confirm('Accept or cancel this confirmation?');
+    log(`confirm() returned: ${result}`);
+  }
+  function trigPrompt() {
+    incr('dialog');
+    log('prompt() fired');
+    const val = prompt('Enter any text for the test:');
+    log(`prompt() returned: ${val === null ? 'null (dismissed)' : `"${val}"`}`);
+  }
+  function trigPromptPrefilled() {
+    incr('dialog');
+    log('prompt() fired (pre-filled)');
+    const val = prompt('Edit or accept the pre-filled value:', 'default value');
+    log(`prompt() returned: ${val === null ? 'null (dismissed)' : `"${val}"`}`);
+  }
+  function delayedDialog(type, delay) {
+    log(`delayed ${type} armed — fires in ${delay/1000}s`);
+    setTimeout(() => {
+      incr('dialog');
+      log(`delayed ${type}() fired`);
+      if (type === 'alert') alert('Delayed alert — 2s after trigger.');
+    }, delay);
+  }
+
+  /* ── BEFORE UNLOAD ─── */
+  let unloadArmed = false;
+  function enableBeforeUnload() {
+    if (!unloadArmed) {
+      window.addEventListener('beforeunload', e => { e.preventDefault(); e.returnValue = ''; });
+      unloadArmed = true;
+      document.getElementById('btn-enable-unload').textContent = '✔ Armed';
+      document.getElementById('btn-away').disabled = false;
+      log('beforeunload listener armed');
+    }
+  }
+
+  /* ── MODAL ─── */
+  function openModal() {
+    incr('popup');
+    document.getElementById('popup-overlay').classList.add('active');
+    log('in-page modal opened');
+  }
+  function closeModal(reason) {
+    document.getElementById('popup-overlay').classList.remove('active');
+    log(`modal closed — ${reason}`);
+  }
+  document.getElementById('popup-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal('backdrop click');
+  });
+
+  /* ── WINDOW FEATURES ─── */
+  function resizeWin(w, h) { try { window.resizeTo(w, h); } catch(e) { log('resizeTo blocked by browser'); } }
+  function closeSelf() {
+    log('window.close() called — browser may block if not script-opened');
+    window.close();
+  }
+
+  /* ── HISTORY ─── */
+  let stateCount = 0;
+  function pushState() {
+    stateCount++;
+    history.pushState({ n: stateCount }, '', `?state=${stateCount}`);
+    log(`pushState → ?state=${stateCount}`);
+  }
+
+  /* ── INIT ─── */
+  const params = new URLSearchParams(location.search);
+  if (params.get('page')) {
+    document.getElementById('page-id').textContent = `page: ${params.get('page')}`;
+    log(`loaded as child page: ${params.get('page')}`);
+  }
+</script>
+</body>
+</html></title>
+</head>
+<body>
+
+</body>
+</html>

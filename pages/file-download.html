@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>File Download Playground</title>
+
+    <link rel="stylesheet" href="../css/style.css">
+
+    <style>
+
+        .container{
+            width:90%;
+            max-width:1100px;
+            margin:30px auto;
+        }
+
+        .card{
+            background:#fff;
+            padding:20px;
+            margin-bottom:20px;
+            border-radius:10px;
+            box-shadow:0 2px 8px rgba(0,0,0,.1);
+        }
+
+        button,a{
+            padding:10px 15px;
+            margin:5px;
+            cursor:pointer;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th,td{
+            border:1px solid #ddd;
+            padding:10px;
+        }
+
+        th{
+            background:#1976d2;
+            color:white;
+        }
+
+        .success{
+            color:green;
+            font-weight:bold;
+        }
+
+        .loader{
+            display:none;
+            color:#1976d2;
+            font-weight:bold;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>File Download Playground</h1>
+
+    <!-- Direct Downloads -->
+
+    <div class="card">
+
+        <h3>Direct Downloads</h3>
+
+        <a
+                id="pdfDownload"
+                href="../assets/downloads/report.pdf"
+                download>
+
+            Download PDF
+
+        </a>
+
+        <a
+                id="csvDownload"
+                href="../assets/downloads/testdata.csv"
+                download>
+
+            Download CSV
+
+        </a>
+
+        <a
+                id="excelDownload"
+                href="../assets/downloads/employee.xlsx"
+                download>
+
+            Download Excel
+
+        </a>
+
+    </div>
+
+    <!-- Dynamic Report -->
+
+    <div class="card">
+
+        <h3>Generate Report</h3>
+
+        <button id="generateReportBtn">
+            Generate Report
+        </button>
+
+        <div
+                id="loader"
+                class="loader">
+
+            Generating report...
+
+        </div>
+
+        <div id="generatedLink"></div>
+
+    </div>
+
+    <!-- Download Counter -->
+
+    <div class="card">
+
+        <h3>Download Counter</h3>
+
+        <p>
+
+            Total Downloads:
+
+            <span id="downloadCount">
+
+0
+
+</span>
+
+        </p>
+
+    </div>
+
+    <!-- History -->
+
+    <div class="card">
+
+        <h3>Download History</h3>
+
+        <table>
+
+            <thead>
+
+            <tr>
+                <th>File Name</th>
+                <th>Date Time</th>
+            </tr>
+
+            </thead>
+
+            <tbody id="historyBody">
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+    /***************************
+     COUNTER
+     ****************************/
+
+    let count = 0;
+
+    function updateDownload(file){
+
+        count++;
+
+        document
+            .getElementById(
+                "downloadCount")
+            .innerText = count;
+
+        document
+            .getElementById(
+                "historyBody")
+            .innerHTML += `
+
+<tr>
+
+<td>${file}</td>
+
+<td>
+${new Date()
+            .toLocaleString()}
+</td>
+
+</tr>
+
+`;
+
+    }
+
+    /***************************
+     DIRECT DOWNLOADS
+     ****************************/
+
+    document
+        .getElementById(
+            "pdfDownload")
+        .addEventListener(
+            "click",
+            ()=>{
+
+                updateDownload(
+                    "report.pdf");
+
+            });
+
+    document
+        .getElementById(
+            "csvDownload")
+        .addEventListener(
+            "click",
+            ()=>{
+
+                updateDownload(
+                    "testdata.csv");
+
+            });
+
+    document
+        .getElementById(
+            "excelDownload")
+        .addEventListener(
+            "click",
+            ()=>{
+
+                updateDownload(
+                    "employee.xlsx");
+
+            });
+
+    /***************************
+     DYNAMIC REPORT
+     ****************************/
+
+    document
+        .getElementById(
+            "generateReportBtn")
+        .addEventListener(
+            "click",
+            ()=>{
+
+                const loader =
+                    document
+                        .getElementById(
+                            "loader");
+
+                loader.style.display =
+                    "block";
+
+                setTimeout(()=>{
+
+                    loader.style.display =
+                        "none";
+
+                    document
+                        .getElementById(
+                            "generatedLink")
+                        .innerHTML =
+
+                        `
+<a
+id="dynamicDownload"
+href="../assets/downloads/report.pdf"
+download>
+
+Download Generated Report
+
+</a>
+`;
+
+                    document
+                        .getElementById(
+                            "dynamicDownload")
+                        .addEventListener(
+                            "click",
+                            ()=>{
+
+                                updateDownload(
+                                    "generated-report.pdf");
+
+                            });
+
+                },3000);
+
+            });
+
+</script>
+
+</body>
+</html>
